@@ -70,7 +70,8 @@ class core_looper():
                  out_prefix="",
                  frame_list=[], core_list=None, target_frame=0,
                  fields_from_grid = [], 
-                 individual_particle_tracks=False):
+                 individual_particle_tracks=False,
+                 derived=[]):
         #set defaults and/or arguments.
         self.current_frame = None
         self.data_template = data_template
@@ -95,6 +96,8 @@ class core_looper():
         self.snaps = defaultdict(dict) 
         #    defaultdict(whatev) is a dict, but makes a new (whatev) by default
         self.ds_list={}
+        self.all_data={}
+        self.derived=derived
 
         self.shift = True
 
@@ -138,6 +141,10 @@ class core_looper():
                 new_ds = False
         if new_ds:
             self.ds = yt.load(self.filename)
+            if derived is None:
+                derived = self.derived
+            for add_derived_field in derived:
+                add_derived_field(self.ds)
             self.ds_list[frame] = self.ds
         if True:
             self.ds.periodicity = (True,True,True)
@@ -437,9 +444,7 @@ def frame_loop(function):
 def particle_loop(function):
     def wrapper(looper,*args,**kwargs):
         for frame in looper.frame_list:
-            self.ds = looper.load(frame=frame)
-            #usually returns 'all_data'
-            region = looper.get_region()
+            snapshot.ds = weakref.proxy(looper.load(frame=frame))
             for core_id in looper.core_list:
                 this_snapshot = looper.make_snapshot(frame,core_id)
                 if this_snapshot.R_centroid is None:

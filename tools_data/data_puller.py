@@ -15,10 +15,10 @@ if 0:
 if 1:
     import xtra_energy
     core_list = all_nonzero.astype('int')
-    frame_list = [0,1]+list(range(10,130,50))+[125]
+    frame_list =[0] # [0,1]+list(range(10,130,50))+[125]
     fields = ['mag_work']
     derived=[xtra_energy.add_force_terms]
-    output_base = 'mag_work_tmp'
+    output_base = 'mag_work_tmp_2'
 for core in core_list:  
     print("core %d"%core)
     output_name = '%s_c%04d.h5'%(output_base,core)
@@ -34,7 +34,7 @@ for core in core_list:
                                      fields_from_grid=fields,
                                      derived = derived
                                   )
-    this_looper.get_target_indices(h5_name='u05_0125_peaklist.h5',
-                                     bad_particle_list='bad_particles.h5')
+    this_looper.get_target_indices(h5_name='datasets_small/u05_0125_peaklist.h5',
+                                     bad_particle_list='datasets_small/bad_particles.h5')
     this_looper.get_tracks()
     trw.save_loop(this_looper,output_name)

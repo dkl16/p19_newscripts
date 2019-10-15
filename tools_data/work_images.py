@@ -8,24 +8,23 @@ if 1:
     this_looper = looper.core_looper(directory= directory,
                                      derived=[xtra_energy.add_force_terms],
                                      sim_name = 'u05',
-                                     out_prefix = 'test',
+                                     out_prefix = 'work1',
                                      target_frame = 125,
-                                     frame_list = [0,120],#list(range(11,120))+[125],
+                                     frame_list = range(0,125,5), #[0,120],#list(range(11,120))+[125],
                                      core_list = core_list, #[THIS_CORE],
                                      fields_from_grid=['x','y','z','mag_work','kinetic_energy','magnetic_energy','pressure_work','gravity_work'],
                                   )
-    this_looper.get_target_indices(h5_name='u05_0125_peaklist.h5',
-                                     bad_particle_list='bad_particles.h5')
+    this_looper.get_target_indices(h5_name='datasets_small/u05_0125_peaklist.h5',
+                                     bad_particle_list='datasets_small/bad_particles.h5')
 @looper.particle_loop
 def core_proj_follow(looper,snapshot, field='density', axis_list=[0,1,2], color='r'):
-    print("YES HAVE SOME")
     for ax in axis_list:
         scale_min = snapshot.ds.arr(0.05,'code_length')
         scale = max([snapshot.R_mag.max(), scale_min])
         sph = snapshot.ds.sphere(snapshot.R_centroid,scale)
         proj = snapshot.ds.proj(field,ax,center=snapshot.R_centroid, data_source = sph)
         pw = proj.to_pw(center = snapshot.R_centroid,width=(1.0,'code_length'), origin='domain')
-        pw.zoom(1./scale.v)
+        pw.zoom(1./(2*scale.v))
         #pw = proj.to_pw(center = 'c',width=(1.0,'code_length'), origin='domain')
         pw.set_cmap(field,'gray')
         #pw.annotate_sphere(snapshot.R_centroid,snapshot.R_mag.max(), circle_args={'color':color} ) #R_mag.max())
@@ -38,4 +37,4 @@ def core_proj_follow(looper,snapshot, field='density', axis_list=[0,1,2], color=
         print(pw.save(outname))
     return pw
 looper.core_looper.core_proj_follow = core_proj_follow
-this_looper.core_proj_follow(axis_list=[0],field='density')
+this_looper.core_proj_follow(axis_list=[0],field='mag_work')

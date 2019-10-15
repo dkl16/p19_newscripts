@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pdb
 nar = np.array
-fptr = open('n_particles.txt','r')
+fptr = open('tools_data/n_particles.txt','r')
 lines=fptr.readlines()
 fptr.close()
 parts = np.zeros([len(lines),2])

@@ -24,6 +24,8 @@ def get_leaf_indices(ds,c_min=None,c_max=None,step=100,h5_name="",pickle_name=No
     """
     if not os.path.exists(h5_name):
         print("WARNING: clump finding not tested.")
+        print("You're probably missing the file u05_0125_peaklist.h5")
+        raise
         ad = ds.all_data()
         #ad  = ds.sphere([0.52075195, 0.74682617, 0.01196289], 0.1)
         master_clump = Clump(ad,('gas','density'))

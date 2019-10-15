@@ -27,8 +27,8 @@ import trackage
 import tracks_read_write
 import os
 
-def get_all_nonzero(fname='n_particles.txt'):
-    fptr = open('n_particles.txt','r')
+def get_all_nonzero(fname='tools_data/n_particles.txt'):
+    fptr = open(fname,'r')
     lines=fptr.readlines()
     fptr.close()
     parts = np.zeros([len(lines),2])

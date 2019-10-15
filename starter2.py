@@ -20,5 +20,11 @@ import tracks_read_write as trw
 reload(trw)
 from davetools import *
 
+#so we can import things from sub directories
+path_list= ["./data_tools", "./pdf_tools", "./testing",\
+            "./tools", "./track_tools", "./trash"]
+for directory in path_list:
+    if directory not in os.path:
+        os.path += [directory]
 
 

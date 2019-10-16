@@ -425,7 +425,7 @@ class snapshot():
             NM= (self.field_values['cell_volume'] < 0).sum()
             print("ERROR: some particles (%d of them) not found.  This is problematic."%NM)
 
-#Decorators frame_loop and particle_loop takes functions and makes them loop over frame and core_id.
+#Decorators frame_loop and core_loop takes functions and makes them loop over frame and core_id.
 #The decorator takes care of loading the data, so your funciton only needs to use it.
 #
 #1.) write a function that does stuff as a method of the clump_looper
@@ -441,7 +441,7 @@ def frame_loop(function):
             function(self,*args,**kwargs)
     return wrapper
 
-def particle_loop(function):
+def core_loop(function):
     def wrapper(looper,*args,**kwargs):
         for frame in looper.frame_list:
             snapshot.ds = weakref.proxy(looper.load(frame=frame))

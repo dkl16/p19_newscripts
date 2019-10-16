@@ -39,7 +39,7 @@ if 1:
     this_looper.get_target_indices(h5_name='u05_0125_peaklist.h5',
                                      bad_particle_list='bad_particles.h5')
 
-@looper.particle_loop
+@looper.core_loop
 def core_proj_follow(looper,snapshot, axis_list=[0,1,2], color='r'):
     for ax in axis_list:
         proj = snapshot.ds.proj('density',ax,center=snapshot.R_centroid)

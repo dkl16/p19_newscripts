@@ -42,7 +42,7 @@ if 1:
 #core_31_density_baddies=nar([1499257, 1597829, 1618375, 1622656, 1626883, 1631042, 1634500])
 #core_31_density_baddies=nar([1495097])
 core_31_density_baddies=nar([1499257])
-@looper.particle_loop
+@looper.core_loop
 def select_particles(looper,snapshot,axis_list=[0,1,2]):
     for axis in axis_list:
         proj = snapshot.ds.proj('density',axis,center='c')
@@ -59,7 +59,7 @@ def select_particles(looper,snapshot,axis_list=[0,1,2]):
 looper.core_looper.select_particles=select_particles
 #this_looper.select_particles()
 
-@looper.particle_loop   #the decorator takes care of the loop
+@looper.core_loop   #the decorator takes care of the loop
 def print_centroid(looper,snapshot): #here's a function, needs to take at least these arguments)
     print("Core %d frame %d centroid (%s)"%(
           snapshot.core_id, snapshot.frame, str( snapshot.R_centroid)))
@@ -71,7 +71,7 @@ looper.core_looper.print_centroid = print_centroid #add your function to looper.
 #for all frames in core_looper.frame_list.
 
 
-@looper.particle_loop
+@looper.core_loop
 def core_proj_follow(looper,snapshot, field='density', axis_list=[0,1,2], color='r'):
     for ax in axis_list:
         scale_min = snapshot.ds.arr(0.05,'code_length')
@@ -93,7 +93,7 @@ def core_proj_follow(looper,snapshot, field='density', axis_list=[0,1,2], color=
     return pw
 looper.core_looper.core_proj_follow = core_proj_follow
 this_looper.core_proj_follow(axis_list=[0])
-@looper.particle_loop
+@looper.core_loop
 def core_circle(self, axis_list=[0,1,2]):
     for axis in axis_list:
         proj = self.ds.proj('density',axis,center='c')
@@ -108,7 +108,7 @@ def core_circle(self, axis_list=[0,1,2]):
 looper.core_circle=core_circle
 
 
-@looper.particle_loop
+@looper.core_loop
 def core_test(looper,snapshot):
     snapshot.do_the_stuff()
     print("FRAME %d CORE_ID %d N_PARICLES %s Centroid %s"%(

@@ -18,7 +18,7 @@ if 1:
                                   )
     this_looper.get_target_indices(h5_name='datasets_small/u05_0125_peaklist.h5',
                                      bad_particle_list='datasets_small/bad_particles.h5')
-@looper.particle_loop
+@looper.core_loop
 def core_proj_follow(looper,snapshot, field='density', axis_list=[0,1,2], color='r'):
     for ax in axis_list:
         scale_min = snapshot.ds.arr(0.05,'code_length')

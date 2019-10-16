@@ -26,6 +26,8 @@ reload(trackage)
 import tracks_read_write as trw
 reload(trw)
 from davetools import *
+import loop_apps
+reload(loop_apps)
 
 
 

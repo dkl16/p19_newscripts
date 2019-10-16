@@ -163,8 +163,8 @@ def add_force_terms(obj):
         return output
     obj.add_field('mag_force_norm',mag_force_norm, validators=std_validators_2, units=work_units, sampling_type='cell')
     def mag_vel_angle(field,data):
-        return data['mag_work']/(data['mag_force_norm']*data['velocity_magnitude']
-    obj.add_field('mag_vel_angle',mag_vel_angle validators=std_validators_2, units=work_units, sampling_type='cell')
+        return data['mag_work']/(data['mag_force_norm']*data['velocity_magnitude'])
+    obj.add_field('mag_vel_angle',mag_vel_angle,validators=std_validators_2, units=work_units, sampling_type='cell')
 
 
     #def pressure_force(field,data):

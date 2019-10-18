@@ -117,6 +117,8 @@ class core_looper():
 
     def save(self,fname = "TEST.h5"):
         tracks_read_write.save_loop(self,fname)
+    def load_loop(self,fname = "TEST.h5"):
+        tracks_read_write.load_loop(self,fname)
 
     def get_current_frame(self):
         if self.current_frame is None:

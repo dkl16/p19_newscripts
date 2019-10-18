@@ -58,7 +58,7 @@ def select_particles(looper,these_particles=None,axis_list=[0,1,2]):
         print( pw.save(outname))
 
 @looper.core_loop
-def core_proj_follow(looper,snapshot, field='density', axis_list=[0,1,2], color='r'):
+def core_proj_follow(looper,snapshot, field='density', axis_list=[0,1,2], color='r',force_log=None,linthresh=100):
     if snapshot.R_centroid is None:
         snapshot.get_all_properties()
     ds = snapshot.get_ds()
@@ -66,12 +66,14 @@ def core_proj_follow(looper,snapshot, field='density', axis_list=[0,1,2], color=
         center = ds.arr(snapshot.R_centroid,'code_length')
         Rmax = snapshot.R_mag.max()
         scale_min = ds.arr(0.05,'code_length')
-        scale = max([2*Rmax, scale_min])
+        scale = max([Rmax, scale_min])
         sph = ds.sphere(center,scale)
         proj = ds.proj(field,ax,center=center, data_source = sph) 
         pw = proj.to_pw(center = center,width=(1.0,'code_length'), origin='domain')
-        pw.zoom(1./scale.v)
+        pw.zoom(1./(2*scale.v))
         pw.set_cmap(field,'gray')
+        if force_log is not None:
+            pw.set_log(field,force_log,linthresh=linthresh)
         pw.annotate_sphere(center,Rmax, circle_args={'color':color} ) #R_mag.max())
         pw.annotate_text(center,
                          "%d"%snapshot.core_id,text_args={'color':color}, 

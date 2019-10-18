@@ -116,14 +116,14 @@ def load_loop(self,fname):
                        "fields_from_grid"
                       ]:
             if value in fptr:
-                self.__dict__[value] = fptr[value].value
+                self.__dict__[value] = fptr[value][()]
         if self.directory is None:
-            self.directory = fptr['directory'].value
+            self.directory = fptr['directory'][()]
         #ti_grp=fptr.create_group('target_indices')
         #for core in self.target_indices:
         #    ti_grp.create_dataset(str(core),data=self.target_indices[core])
         for core in fptr['target_indices']:
-            self.target_indices[int(core)]=fptr['target_indices'][core].value
+            self.target_indices[int(core)]=fptr['target_indices'][core][()]
 
         for frame_name in fptr['snaps']:
             frame_number = int(frame_name.split()[1])
@@ -136,7 +136,7 @@ def load_loop(self,fname):
                                                                         dummy_ds=True)
                 this_snap=self.snaps[frame_number][core_number]
                 if 'time' in core_grp:
-                    this_snap.time = core_grp['time'].value
+                    this_snap.time = core_grp['time'][()]
                 else:
                     this_snap.time = time_kludge.d[frame_number]
                 #this_snap.field_values={}
@@ -145,24 +145,24 @@ def load_loop(self,fname):
                             "mask",
                             "N_vec"]:
                     if val in core_grp:
-                        this_snap.__dict__[val]=core_grp[val].value
+                        this_snap.__dict__[val]=core_grp[val][()]
                 for val in ["R_centroid",
                             "R_vec",
                             "pos",
                             "R_mag", ]:
                     if val in core_grp:
                         #thisval = this_snap.ds.arr(core_grp[val].value,'code_length')
-                        thisval = yt.units.yt_array.YTArray(core_grp[val].value,'cm')
+                        thisval = yt.units.yt_array.YTArray(core_grp[val][()],'cm')
                         this_snap.__dict__[val]=thisval
                 for val in ["V_bulk",
                             "V_rel",
                             "V_radial"]:
                     if val in core_grp:
                         #thisval = this_snap.ds.arr(core_grp[val].value,'code_velocity')
-                        thisval = yt.units.yt_array.YTArray(core_grp[val].value,'cm/s')
+                        thisval = yt.units.yt_array.YTArray(core_grp[val][()],'cm/s')
                         this_snap.__dict__[val]=thisval
                 for val in core_grp['field_values']:
-                    this_snap.field_values[val]=core_grp['field_values'][val].value
+                    this_snap.field_values[val]=core_grp['field_values'][val][()]
             if self.tr is None:
                 self.tr = trackage.track_manager(self)
             self.tr.ingest(this_snap)

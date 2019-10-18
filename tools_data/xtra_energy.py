@@ -150,7 +150,8 @@ def add_force_terms(obj):
         output += data['velocity_z']*(current[0]*Bvector[1]-current[1]*Bvector[2])
         output *= 1./(np.pi*4)
         return output
-    obj.add_field('mag_work',mag_work, validators=std_validators_2, units=work_units, sampling_type='cell')
+    obj.add_field('mag_work',mag_work, validators=std_validators_2, units=work_units, sampling_type='cell',take_log=True)
+
     def mag_force_norm(field,data):
         """||j cross B||"""
         Bvector = [data['magnetic_field_%s'%s] for s in 'xyz']
@@ -161,7 +162,7 @@ def add_force_terms(obj):
         output = np.sqrt(output)
         output *= 1./(np.pi*4)
         return output
-    obj.add_field('mag_force_norm',mag_force_norm, validators=std_validators_2, units=work_units, sampling_type='cell')
+    obj.add_field('mag_force_norm',mag_force_norm, validators=std_validators_2, units=work_units, sampling_type='cell',take_log=True)
     def mag_vel_angle(field,data):
         return data['mag_work']/(data['mag_force_norm']*data['velocity_magnitude'])
     obj.add_field('mag_vel_angle',mag_vel_angle,validators=std_validators_2, units=work_units, sampling_type='cell')

@@ -10,8 +10,6 @@ if 1:
     import pyximport; pyximport.install()
     import particle_ops
     import particle_grid_mask
-#from p19b_select_particle_callback import *
-#from p19_tools import *
     import h5py
     import copy 
     import pdb

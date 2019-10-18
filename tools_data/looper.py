@@ -11,8 +11,6 @@ from importlib import reload
 import pyximport; pyximport.install()
 import particle_ops
 import particle_grid_mask
-#from p19b_select_particle_callback import *
-#from p19_tools import *
 import loop_tools
 reload(loop_tools)
 import h5py

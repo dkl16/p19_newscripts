@@ -46,14 +46,14 @@ if 0:
     loop_apps.select_particles(this_looper,axis_list=[0],
                                these_particles=this_looper.target_indices[ core_list[0] ])
 
-if 0:
+if 1:
     #Plot each core individually, zoomed in to the core itself.
-    loop_apps.core_proj_follow(this_looper,field='mag_work',axis_list=[0])
+    loop_apps.core_proj_follow(this_looper,field='mag_work',axis_list=[0],force_log=True)
 
 
 if 0:
     """Draws circles around each core."""
     loop_apps.core_circle( this_looper, axis_list=[0])
 
-if 1:
+if 0:
     loop_apps.proj_cores_with_annotations( this_looper, axis_list=[0],color_dict={79:'g',83:'b'})

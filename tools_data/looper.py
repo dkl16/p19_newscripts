@@ -213,6 +213,7 @@ class snapshot():
     def __init__(self,loop,frame,core_id,dummy_ds=False):
         self.loop           = weakref.proxy(loop) #cyclic references are bad, weakref helps.
         self.target_indices = weakref.proxy(loop.target_indices[core_id])
+        self.dummy_ds=dummy_ds
         if dummy_ds:
             self.ds=None
             self.time = -1
@@ -236,6 +237,12 @@ class snapshot():
         self.V_radial    =None #(radial coordinate of velocity)
         
         self.dummy_ds = dummy_ds
+
+    def get_ds(self,frame=None):
+        if frame is None:
+            frame = self.frame
+        self.ds             = weakref.proxy(self.loop.load(frame,dummy=False) )
+        return self.ds
 
     def get_all_properties(self):
         """Run all the relevant analysis pieces."""
@@ -443,10 +450,10 @@ def frame_loop(function):
 
 def core_loop(function):
     def wrapper(looper,*args,**kwargs):
-        for frame in looper.frame_list:
-            snapshot.ds = weakref.proxy(looper.load(frame=frame))
-            for core_id in looper.core_list:
-                this_snapshot = looper.make_snapshot(frame,core_id)
+        for looper.current_frame in looper.frame_list:
+            snapshot.ds = weakref.proxy(looper.load(frame=looper.current_frame))
+            for looper.core_id in looper.core_list:
+                this_snapshot = looper.make_snapshot(looper.current_frame,looper.core_id)
                 if this_snapshot.R_centroid is None:
                     this_snapshot.get_all_properties()
                 output = function(looper,this_snapshot,*args,**kwargs)

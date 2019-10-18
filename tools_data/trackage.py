@@ -1,21 +1,20 @@
-if 1:
-    import matplotlib
-    matplotlib.use('Agg')
-    import math
-    import matplotlib.pyplot as plt
-    import numpy as np
-    nar = np.array
-    import time
-    from importlib import reload
-    import pyximport; pyximport.install()
-    import particle_ops
-    import particle_grid_mask
-    import h5py
-    import copy 
-    import pdb
-    from importlib import reload
-    from collections import defaultdict
-    import weakref
+import matplotlib
+matplotlib.use('Agg')
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+nar = np.array
+import time
+from importlib import reload
+import pyximport; pyximport.install()
+import particle_ops
+import particle_grid_mask
+import h5py
+import copy 
+import pdb
+from importlib import reload
+from collections import defaultdict
+import weakref
 if 0:
     import loop_tools
     reload(loop_tools)
@@ -187,29 +186,14 @@ class track_manager():
 def shift_down(pos):
     #shift based on the time history: if a particle jumps more than half the box,
     #move it.
-    global bork
-    global delta
-    global bo
-    global smo
     sign = -1
     out = copy.copy(pos)
-    bork=out[:,-1]+0
-    #delta = sign*(out[:,1:]-out[:,:-1])
-    #shape = delta.shape
-    #bork=delta.max(axis=1)
-    #bork = np.tile(bork,(shape[1],1)).transpose()
-    bo = out+0#np.logical_and(delta <= bork, delta > 0.5)
 
-    #out[:,:-1][bo] -= 1
-   
-
-    #distance_from_final = np.abs(out- np.tile(out[:,-1], (out.shape[1],1)).transpose())
     mean_pos = np.median(out[:,-1])
     #print("mean_pos",mean_pos)
     distance_from_final =        out- mean_pos
     #ft = np.abs(distance_from_final[:,:-1]) > 0.5
     ft = np.abs(distance_from_final) > 0.5
-    smo=ft
     out[ft] -=  1*np.sign(distance_from_final[ft])
 
 

@@ -9,7 +9,7 @@ file_list=glob.glob('%s/*h5'%dl.sixteen_frame)
 out_prefix = 'CHANGE_THIS_PREFIX'
 
 out_prefix='test'
-file_list = file_list[:10]
+file_list = file_list[:2]
 
 
 if 'this_looper' not in dir():
@@ -18,14 +18,13 @@ if 'this_looper' not in dir():
         this_looper.load_loop(fname)
         print( "File %d of %d"%(nfile,len(file_list)))
     thtr = this_looper.tr
-    all_cores = np.unique(thtr.core_ids)
-    rm = rainbow_map(len(all_cores))
+    thtr.sort_time()
+all_cores = np.unique(thtr.core_ids)
+rm = rainbow_map(len(all_cores))
 
-core_list = all_cores[:3]
+core_list = all_cores
 for core_id in core_list:
-    asort =  np.argsort(thtr.times)
-    n0=asort[0]
-    tsorted = thtr.times[asort]
+    n0=0
 
     fig,ax=plt.subplots(1,1)
     ms = trackage.mini_scrubber(thtr,core_id)
@@ -39,13 +38,13 @@ for core_id in core_list:
 
     for npart in list(range(ms.nparticles)):
         c = color_map.to_rgba(np.log10(density[npart,n0]))
-        ax.plot( tsorted, density[npart,asort],c=c,linewidth=.1)#linestyle=':')
-    ax.plot(tsorted, density.mean(axis=0)[asort],c='k')
+        ax.plot( thtr.times, density[npart,:],c=c,linewidth=.1)#linestyle=':')
+    ax.plot(tsorted, density.mean(axis=0)[:],c='k')
 
-    t0 = thtr.times[asort][0]
-    t1 = thtr.times[asort][-1]
-    rho0 =1.1 #10 # np.mean(density[:,asort[0]])
-    rho1 = density.max() # np.mean(density[:,asort[-1]])
+    t0 = thtr.times[0]
+    t1 = thtr.times[-1]
+    rho0 =1.1 
+    rho1 = density.max() 
     alpha = 1.8
     tc =t1*(1-(rho1/rho0)**(-1./alpha))**-0.5
     G=1 #np.pi*4#1620./(4*np.pi)
@@ -60,3 +59,4 @@ for core_id in core_list:
     axbonk(ax,xscale='linear',yscale='log',xlabel='t',ylabel=r'$\rho$')
     oname = "%s/%s_density_4_c%04d"%(dl.output_directory,out_prefix,core_id)
     fig.savefig(oname)
+    print("Saved "+oname)

@@ -104,6 +104,7 @@ class core_looper():
                 print("No such file "+savefile)
             else:
                 tracks_read_write.load_loop(self,savefile)
+                self.tr.sort_time()
 
         #read from save file.
         #if savefile is not None:

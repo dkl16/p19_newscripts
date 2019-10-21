@@ -237,26 +237,6 @@ for nfile,fname in enumerate(file_list) :#[:3])
                 print('saved '+outname)
 
     
-    if 0:
-        delta=0.1
-        #time snaps
-        fig_many, ax_many = plt.subplots(1,1)
-        asort =  np.argsort(thtr.times)
-        for nc,core_id in enumerate(ls):
-            tmap=rainbow_map(ms.ntimes)
-            for it,nt in enumerate(asort):
-                ax_many.clear()
-                ax_many.plot([0,1,1,0,0],[0,0,1,1,0])
-                ax_many.scatter(ms.this_x[:,nt],ms.this_y[:,nt],s=0.1)
-                ax_many.set_xlim(-delta,1+delta); ax_many.set_ylim(-delta,1+delta)
-                title='t=%0.5f'%thtr.times[nt]
-                ax_many.set_title(title)
-                ax_many.set_aspect('equal')
-                outname = 'image_tracks/xy_t_c%04d_n%04d.png'%(core_id,it)
-                fig_many.savefig(outname)
-            #nt=100
-        print(outname)
-            #outname = 'image_tracks/xy_t_c%04d_n%04d.png'%(core_id,nt)
             #fig_many.savefig(outname)
 
     if 0:

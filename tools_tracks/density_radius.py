@@ -14,7 +14,7 @@ if 'this_looper' not in dir():
     this_looper=looper.core_looper(directory=dl.enzo_directory)
     for nfile,fname in enumerate(file_list):
         this_looper.load_loop(fname)
-        print( "File %d of %d"%(nfile,len(file_list)))
+        print( "Reading file %d of %d"%(nfile,len(file_list)))
     thtr = this_looper.tr
     thtr.sort_time()
     all_cores = np.unique(thtr.core_ids)

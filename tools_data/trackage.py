@@ -48,10 +48,10 @@ class track_manager():
     def sort_time(self):
         """fix up the time ordering of the members"""
         asort =  np.argsort(self.times)
-        for k in self.track_dict:
-            self.track_dict[k]=self.track_dict[k][:,asort]
-
-        self.times = self.times[asort]
+        if (asort != sorted(asort)).any():
+            for k in self.track_dict:
+                self.track_dict[k]=self.track_dict[k][:,asort]
+            self.times = self.times[asort]
 
     def write(self,fname):
         fptr = h5py.File(fname,'w')
@@ -143,7 +143,6 @@ class track_manager():
             nuggle.shape=(particle_ids.size,1)
             temp_frame[new_slice]=nuggle
             self[field]=temp_frame
-        self.sort_time()
 
 
     def p(self,particle_list,field):

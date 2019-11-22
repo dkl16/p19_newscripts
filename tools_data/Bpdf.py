@@ -7,9 +7,11 @@ import numpy as np
 import yt
 from importlib import reload
 plt.clf()
+plt.close('all')
 
 directory = '/Users/dcollins/scratch/P49d/ca03_turb_weak'
 frame=339
+plot_directory = "/Users/dcollins/RESEARCH3/Paper63_PB"
 
 if 'print_reload_reminder' not in dir():
     #If you do
@@ -68,7 +70,7 @@ if 'joint' not in dir():
 if 'prof_mag' not in dir():
     prof_mag  = yt.create_profile(region, bin_fields=['magnetic_field_strength'],fields=['cell_volume'], weight_field=None, override_bins=bins)
 if 'prof_theta' not in dir():
-    prof_theta  = yt.create_profile(region, bin_fields=['theta_z'],fields=['cell_volume'], weight_field=None, override_bins=bins)
+    prof_theta  = yt.create_profile(region, bin_fields=['thetaz'],fields=['cell_volume'], weight_field=None, override_bins=bins)
 if 'prof_bz' not in dir():
     prof_bz  = yt.create_profile(region, bin_fields=['magnetic_field_z'],fields=['cell_volume'], weight_field=None, override_bins=bins)
 
@@ -78,7 +80,7 @@ if 'prof_bz' not in dir():
 # 
 #
 
-if 1:
+if 0:
     #Marginalized distributions
     #set up plot tools
     plt.close('all')
@@ -132,16 +134,32 @@ if 1:
     min_val = ph[ph>0].min()
     max_val = ph.max()
     norm = colors.Normalize(vmin=min_val,vmax=max_val)
-    extents = [prof_mag.x_bins.min(), prof_mag.x_bins.max(),0,1]
+    extents = [prof_mag.x_bins.min(), prof_mag.x_bins.max(),prof_theta.x_bins.min(), prof_theta.x_bins.max()]
     pl=ax0.imshow(ph, norm=norm, interpolation='nearest',origin='lower',extent=extents,aspect='auto')
     cb=fig2.colorbar(pl,ax=ax0)
     cb.cmap.set_under('w')
 
     norm = colors.Normalize(vmin=min_val,vmax=max_val)
-    pl1=ax1.imshow(ph2, norm=norm, interpolation='nearest',origin='lower')
+    pl1=ax1.imshow(ph2, norm=norm, interpolation='nearest',origin='lower', extent=extents,aspect='auto')
     cb1=fig2.colorbar(pl1,ax=ax1)
     cb1.cmap.set_under('w')
 
     fig2.savefig('%s/joint_test.png'%plot_directory)
+    plt.close(fig2)
 
+
+if 1:
+    fig3, ax3 = plt.subplots(1,1)
+
+
+    #I belive I may have a normalization wrong or something...
+    ph2 = ph2/ph2.max()*ph.max()
+    levels1 = np.arange(0,ph.max() , ph.max()/7)
+    contour_sep=ax3.contour(ph2,levels1,colors='r',extent=extents)
+    contour_joint=ax3.contour(ph ,levels1,colors='k',extent=extents)
+    ax3.set_xlabel(r'$B$')
+    ax3.set_ylabel(r'$\theta$')
+    ax3.text(0.2,3.0,r'$P(B)P(\theta)$',color='r')
+    ax3.text(0.2,2.7,r'$P(B,\theta)$',color='k')
+    fig3.savefig("%s/contours.pdf"%plot_directory)
 

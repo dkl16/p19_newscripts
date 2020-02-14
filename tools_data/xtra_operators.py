@@ -94,7 +94,7 @@ def GradScalar(V, dx_in):
 
     #dV/dz \hat{z}
     dVdX = 1./dx[2]*(V[act,act,SR] - V[act,act,SL])
-    output[0][act,act,act] = dVdX
+    output[2][act,act,act] = dVdX
     return output
 
 

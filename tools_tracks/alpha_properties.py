@@ -103,65 +103,6 @@ if 'alpha' not in dir():
             print("saved "+outname)
             plt.close(fig)
 
-if 'alpha_proxy' not in dir() or True:
-    do_all_plots=True
-    div_v=[]
-    v_over_r=[]
-    divv_extents=davetools.extents()
-    divv_extents( thtr.track_dict['velocity_divergence'])
-    proxy_extents=davetools.extents()
-    for nc,core_id in enumerate(core_list):
-        #miniscrubber computes distance, r^2, several other quantities
-        ms = trackage.mini_scrubber(thtr,core_id)
-        if ms.nparticles == 1:
-            continue
-        density = thtr.c([core_id],'density')
-        div_v = thtr.c([core_id],'velocity_divergence')
-        mag_v = thtr.c([core_id],'velocity_magnitude')
-        divv_extents(div_v)
-        if do_all_plots:
-            tmap=rainbow_map(ms.ntimes)
-            fig, axes=plt.subplots(2,2)
-            ax00=axes[0][0]; ax01=axes[0][1]
-            ax10=axes[1][0]; ax11=axes[1][1]
-
-            for n_count,n_time in enumerate(asort):
-                time=thtr.times[n_time]
-                if time == 0:
-                    continue
-                c=tmap(n_count,ms.nparticles)
-                this_r=ms.r[:,n_time]+0
-
-                ax00.scatter(this_r,div_v[:,n_time],c=c,label=thtr.times[n_time],s=0.1)
-                ax01.scatter(this_r,mag_v[:,n_time],c=c,label=thtr.times[n_time],s=0.1)
-
-
-                alpha_proxy = div_v[:,n_time]/mag_v[:,n_time]*ms.r[:,n_time]
-                proxy_extents(alpha_proxy)
-                ax10.scatter(this_r,alpha_proxy.flatten(),c=c,label=thtr.times[n_time],s=0.1)
-            davetools.axbonk(ax00,xscale='log',yscale='linear',xlabel='r',ylabel=r'$\nabla\cdot v$',
-                             xlim=r_extents.minmax, ylim=rho_extents.minmax)
-            ax00.set_yscale('symlog',linthreshy=1)
-            ax00.set_ylim(-5e5,5e5)
-
-            davetools.axbonk(ax01,xscale='log',yscale='log',xlabel='r',ylabel=r'$|v|$',
-                             xlim=r_extents.minmax, ylim=rho_extents.minmax)
-            ax01.set_yscale('symlog',linthreshy=1)
-            ax01.set_ylim(0,100)
-
-            ax10.plot([1e-3,1e-1], [alpha_dict[core_id],alpha_dict[core_id]],c='k')
-            ax10.plot([1e-3,1e-1], [-0.5,-0.5],c=[0.5]*4)
-            ax10.plot([1e-3,1e-1], [-3,-3],c=[0.5]*4)
-            davetools.axbonk(ax10,xscale='log',yscale='linear',xlabel='r',ylabel=r'$\nabla\cdot v/(v/r)$',
-                             xlim=r_extents.minmax, ylim=rho_extents.minmax)
-            ax10.set_yscale('symlog',linthreshy=0.1)
-            ax10.set_ylim(proxy_extents.minmax)
-
-            outname = '%s/divergence_proxy_c%04d'%(dl.output_directory,core_id)
-            fig.savefig(outname)
-            print("saved "+outname)
-            plt.close(fig)
-
 
 if 0:
     mass=nar(mass)

@@ -33,7 +33,9 @@ if 'this_looper' not in dir() and False:
     #this_looper.save('all_cores_n%04d.h5'%0)
 
 
-import testing.cic_test as cic
+#import testing.cic_test as cic
+import testing.early_mask as em
+reload(em)
 
 
 def toplot(prof,quan = 'cell_volume'):
@@ -42,36 +44,42 @@ def toplot(prof,quan = 'cell_volume'):
     pdf = prof[quan]
     return xbins, bin_center,pdf
 
-if 1:
+if 0:
     frame=0
-    ds = this_looper.load(frame=frame,derived=[cic.add_tracer_density])
+    ds = this_looper.load(frame=frame,derived=[em.add_tracer_density])
+    em.add_tracer_density(ds)
     ad = ds.all_data() #ds.region([0.5]*3,[0.4]*3,[0.6]*3)
+    deposit_tuple = ("deposit","target_particle_volume")
+    ad[deposit_tuple]
+        
+if 0:
     all_target_indices = np.concatenate( [this_looper.target_indices[core_id] for core_id in core_list])
     ad.set_field_parameter('target_indices',all_target_indices)
     ad.set_field_parameter('mask_to_get',np.zeros_like(all_target_indices,dtype='int32'))
-    bins={'velocity_x':np.linspace(-25,25,64)}
-    bins['PotentialField']= np.linspace(-50,50,64)
-    #bins=None
-    prof_all_density  = yt.create_profile(ad,bin_fields=['PotentialField'],fields=['cell_volume'],weight_field=None, override_bins=bins)
-    prof_mask_density = yt.create_profile(ad,bin_fields=['PotentialField'],fields=['deposit_target_particles_boolean'],weight_field=None, override_bins=bins)
+    #bins={'velocity_x':np.linspace(-25,25,64)}
+    #bins['PotentialField']= np.linspace(-50,50,64)
+    bins=None
+    prof_all_density  = yt.create_profile(ad,bin_fields=['kinetic_energy'],fields=['cell_volume'],weight_field=None, override_bins=bins)
+    prof_mask_density = yt.create_profile(ad,bin_fields=['kinetic_energy'],fields=[deposit_tuple],weight_field=None, override_bins=bins)
 
 if 1:
     fig,ax=plt.subplots(1,1)
     bbb1, bcen1, vals1 = toplot(prof_all_density)
     ax.plot( bcen1,vals1,'k')
-    bbb2, bcen2, vals2 = toplot(prof_mask_density,quan='deposit_target_particles_boolean')
+    bbb2, bcen2, vals2 = toplot(prof_mask_density,quan=deposit_tuple[1])
     ax.plot( bcen2,vals2,'r')
     ax.plot( bcen2,vals2*vals1.max()/vals2.max(),'r:')
-    outname = "plots_to_sort/pdf_test.png"
+    outname = "plots_to_sort/pdf_test_ke.png"
     #axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='log',yscale='log')
-    axbonk(ax,xlabel=r'$vx$',ylabel='V(rho)',xscale='linear',yscale='linear')
+    axbonk(ax,xlabel=r'$KE$',ylabel='V(rho)',xscale='linear',yscale='linear')
+    axbonk(ax,xlabel=r'$KE$',ylabel='V(rho)',xscale='log',yscale='log')
     fig.savefig(outname)
     print(outname)
     plt.close(fig)
     
 
 if 0:
-    ds = this_looper.load(frame=frame,derived=[cic.add_tracer_density])
+    ds = this_looper.load(frame=frame,derived=[em.add_tracer_density])
     ad = ds.all_data() #ds.region([0.5]*3,[0.4]*3,[0.6]*3)
     fp={}
     all_target_indices = np.concatenate( [this_looper.target_indices[core_id] for core_id in core_list])

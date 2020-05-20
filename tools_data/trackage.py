@@ -52,6 +52,7 @@ class track_manager():
             for k in self.track_dict:
                 self.track_dict[k]=self.track_dict[k][:,asort]
             self.times = self.times[asort]
+            self.frames= self.frames[asort]
 
     def write(self,fname):
         fptr = h5py.File(fname,'w')
@@ -263,10 +264,11 @@ class mini_scrubber():
             self.sqr_vx = np.sum(self.raw_vx**2,axis=0)
             self.sqr_vy = np.sum(self.raw_vy**2,axis=0)
             self.sqr_vz = np.sum(self.raw_vz**2,axis=0)
-            self.raw_v2 = self.raw_vx**2+self.raw_vy**2+self.raw_vx**2
+            self.raw_v2 = self.raw_vx**2+self.raw_vy**2+self.raw_vz**2
             self.rel_vx = self.raw_vx-self.mean_vx
             self.rel_vy = self.raw_vy-self.mean_vy
-            self.rel_vz = self.raw_vx-self.mean_vz
+            self.rel_vz = self.raw_vz-self.mean_vz
+            self.rel_v2 = self.rel_vx**2+self.rel_vy**2+self.rel_vz**2
             self.cov_v2 = (self.raw_vx-self.mean_vx)**2+\
                           (self.raw_vy-self.mean_vy)**2+\
                           (self.raw_vx-self.mean_vz)**2
@@ -285,6 +287,8 @@ class mini_scrubber():
             self.vt2_rel = (self.rel_vx-self.vr_rel*self.rx_hat)**2+\
                        (self.rel_vy-self.vr_rel*self.ry_hat)**2+\
                        (self.rel_vz-self.vr_rel*self.rz_hat)**2
+            self.zero_raw = self.vt2_raw + self.vr_raw**2 - self.raw_v2
+            self.zero_rel = self.vt2_rel + self.vr_rel**2 - self.rel_v2
 
 
         self.axis = axis

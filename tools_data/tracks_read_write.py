@@ -7,39 +7,13 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pdb
-nar = np.array
-fptr = open('tools_data/n_particles.txt','r')
-lines=fptr.readlines()
-fptr.close()
-parts = np.zeros([len(lines),2])
-for n,line in enumerate(lines):
-    parts[n] = np.array(line.split(),dtype='int')
-all_nonzero = parts[:,0][ parts[:,1] >0]
-from importlib import reload
-
 import looper
-reload(looper)
 import trackage
-reload(trackage)
 import time_kludge
+from importlib import reload
+reload(looper)
+reload(trackage)
 reload(time_kludge)
-#many1: frame_list = list(range(10,130,10)) + [125]
-#many1: core_list =  [ 120, 10, 308, 41, 44, 110, 1, 65], 
-if 0:
-	if 'this_looper' not in dir():
-		directory = '/scratch2/dcollins/Paper19_48/B02/u05-r4-l4-128'
-		this_looper = looper.core_looper(directory= directory,
-										 sim_name = 'u05',
-										 out_prefix = 'test',
-										 target_frame = 125, frame_list =  [1], #[0,1,2]+list(range(10,130,10))+[125],
-										 core_list =  [10],
-										 fields_from_grid=['x','y','z','velocity_magnitude','magnetic_field_strength',
-														  'velocity_divergence'],
-									  )
-		this_looper.get_target_indices(h5_name='u05_0125_peaklist.h5')
-		this_looper.get_tracks()
-#this_looper.save_loop("test.h5")
-	self = this_looper
 
 def save_loop(self,fname):
     fptr = h5py.File(fname,'w')
@@ -169,9 +143,9 @@ def load_loop(self,fname):
                         this_snap.__dict__[val]=thisval
                 for val in core_grp['field_values']:
                     this_snap.field_values[val]=core_grp['field_values'][val][()]
-            if self.tr is None:
-                self.tr = trackage.track_manager(self)
-            self.tr.ingest(this_snap)
+                if self.tr is None:
+                    self.tr = trackage.track_manager(self)
+                self.tr.ingest(this_snap)
         #for val in ['particle_ids','core_ids','frames','times']:
         #    self.tr.__dict__[val] =fptr['track_manager'][val].value
         #self.tr.track_dict={}

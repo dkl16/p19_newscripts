@@ -116,7 +116,13 @@ def load_loop(self,fname):
                        "fields_from_grid"
                       ]:
             if value in fptr:
-                self.__dict__[value] = fptr[value][()]
+                the_value = fptr[value][()]
+                if value in ['frame_list','core_list']:
+                    for iii in the_value:
+                        if iii not in self.__dict__[value]:
+                            self.__dict__[value].append(iii)
+                else:
+                    self.__dict__[value] = the_value
         if self.directory is None:
             self.directory = fptr['directory'][()]
         #ti_grp=fptr.create_group('target_indices')

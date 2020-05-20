@@ -35,16 +35,22 @@ if 'rho_extents' not in dir():
         rho_extents(density)
         r_extents(ms.r)
 
+r_extents.minmax[0]=0.5/2048
 asort =  np.argsort(thtr.times)
 if (asort != sorted(asort)).any():
     print("Warning: times not sorted.")
-do_all_plots=False
-if 'alpha' not in dir():
+do_all_plots=True
+if 'alpha' not in dir() or True:
     alpha = []
     mass = []
     density_0=[]
     mean_div = []
     alpha_dict={}
+    ft_lst_rho0=[]
+    ft_lst_r0=[]
+    ft_lst_alpha=[]
+    mini_alphas={}
+
 
     for nc,core_id in enumerate(core_list):
 
@@ -66,6 +72,16 @@ if 'alpha' not in dir():
         alpha_dict[core_id]=alpha[-1]
         density_0.append( density[:,0].mean()) #this is not good
 
+        from scipy.optimize import curve_fit
+        def powerlaw(r,rho0, r0, alpha):
+            return alpha*np.log10(r/r0) + np.log10(rho0)
+        this_rho = density.flatten()
+        popt, pcov = curve_fit(powerlaw, this_r, np.log10(this_rho), p0=[1,1,-2])
+        fit_rho0, fit_r0, fit_alpha = popt
+        ft_lst_rho0.append(fit_rho0)
+        ft_lst_r0.append(fit_r0)
+        ft_lst_alpha.append(fit_alpha)
+
         #compute initial mass.
         for nf in [0]:
             dx=1./2048
@@ -73,37 +89,73 @@ if 'alpha' not in dir():
             x =np.floor(thtr.c([core_id],'x')/dx)[:,nf]
             y =np.floor(thtr.c([core_id],'y')/dx)[:,nf]
             z =np.floor(thtr.c([core_id],'z')/dx)[:,nf]
-            density = thtr.c([core_id],'density')[:,nf]
+            this_density = density[:,nf]
             cell_volume = thtr.c([core_id],'cell_volume')[:,nf]
             index = x + nx*(y * nx*z)
             ar = np.argsort(index)
             rs = np.argsort(ar)
             isorted=index[ar]
-            mask = np.ones_like(density,dtype='bool')
+            mask = np.ones_like(this_density,dtype='bool')
             mask[1:] = isorted[1:]-isorted[:-1] != 0
             mask2 = mask[ rs]
-            mass.append((density[mask2]*cell_volume[mask2]).sum())
+            mass.append((this_density[mask2]*cell_volume[mask2]).sum())
 
         if do_all_plots:
+            fig, axes=plt.subplots(1,2)
+            axd1 = axes[0]; axd2 = axes[1]
+            #other_fit = other_fit(this_r, density.flatten())
+            this_r = np.array([min_r, 0.3])
+            #this_r[ this_r < min_r] = min_r
+            axd1.plot( this_r, 10**powerlaw(this_r, popt[0],popt[1],popt[2]))
+            #axd1.plot( this_r, 0.1*(this_r/0.3)**alpha[-1],c='k')
+            #axd1.plot( this_r, 0.1*(this_r/0.3)**-0.5,c=[0.9]*3)
+            #axd1.plot( this_r, 0.1*(this_r/0.3)**-1.0,c=[0.9]*3)
+            #axd1.plot( this_r, 0.1*(this_r/0.3)**-1.5,c=[0.9]*3)
+            #axd1.plot( this_r, 0.1*(this_r/0.3)**-2.0,c=[0.9]*3)
+            #axd1.plot( this_r, 0.1*(this_r/0.3)**-2.5,c=[0.9]*3)
             tmap=rainbow_map(ms.ntimes)
-            fig, axd1=plt.subplots(1,1)
+            mini_alphas[core_id]=[]
+            time_list_dumb=[]
+            color_list_dumb=[]
+
             for n_count,n_time in enumerate(asort):
                 time=thtr.times[n_time]
                 if time == 0:
                     continue
                 c=tmap(n_count,ms.nparticles)
+                time_list_dumb.append(time)
+                color_list_dumb.append(c[0])
                 this_r=ms.r[:,n_time]+0
+                this_r[ this_r < min_r] = min_r
+                this_density=density[:,n_time]
+                #popt, pcov = curve_fit(powerlaw, this_r, np.log10(this_density), p0=[1,1,-2])
+                lilfit=np.polyfit( np.log10(this_r), np.log10(this_density), 1)
+                axd1.scatter(this_r,this_density,c=c,label=thtr.times[n_time],s=0.1)
+                axd1.plot( this_r, 10**(lilfit[0]*np.log10(this_r)+lilfit[1]),c=c[0])
+                mini_alphas[core_id].append(lilfit[0])
 
-                axd1.scatter(this_r,density[:,n_time],c=c,label=thtr.times[n_time],s=0.1)
-            axd1.set_title(r'$\alpha = %0.3f$'%alpha[-1])
-            davetools.axbonk(axd1,xscale='log',yscale='log',xlabel='r',ylabel=r'$\rho$',
+
+            title=""
+            title+=r'$\alpha = %0.3f\ \rho_0 = $%s$ r_0=$%s'%(alpha[-1], expform(fit_rho0),expform(fit_r0))
+            axd1.set_title(title)
+            axd2.scatter(time_list_dumb, mini_alphas[core_id],c=color_list_dumb)
+            axd2.plot(time_list_dumb, mini_alphas[core_id],c=[0.5]*3)
+            axd2.plot(time_list_dumb, [fit_alpha]*len(time_list_dumb),c='k')
+
+            axbonk(axd1,xscale='log',yscale='log',xlabel='r',ylabel=r'$\rho$',
                              xlim=r_extents.minmax, ylim=rho_extents.minmax)
+            axbonk(axd2,xlabel=r'$t$',ylabel=r'$\alpha(t)$',ylim=[-4,2])
+            #axbonk(axd2,xscale='log',yscale='log',xlabel='r',ylabel=r'$\rho$',
+            #                 xlim=r_extents.minmax, ylim=rho_extents.minmax)
+            axd1.set_ylim(rho_extents.minmax)
+            axd1.set_xlim(r_extents.minmax)
+            print("R EXTENTS", r_extents.minmax)
             outname = '%s/density_radius_c%04d'%(dl.output_directory,core_id)
             fig.savefig(outname)
             print("saved "+outname)
             plt.close(fig)
 
-if 1:
+if 0:
     mass=nar(mass)
     fig, axes=plt.subplots(1,2)
     ax0 = axes[0]; ax1=axes[1]
@@ -116,8 +168,22 @@ if 1:
     fig.savefig(outname)
     print(outname)
 
-"""
-if 'alpha_proxy' not in dir() or True:
+
+
+#plt.clf()
+#alpha=np.array(alpha)
+#ft_lst_alpha=np.array(ft_lst_alpha)
+#plt.scatter(alpha,1-(alpha/ft_lst_alpha))
+#plt.savefig('plots_to_sort/alpha_alpha.png')
+#plt.close('all')
+
+#fig,ax=plt.subplots(1,1)
+#ax.scatter(ft_lst_rho0,ft_lst_r0)
+#axbonk(ax,xlabel=r'$\rho_0$',ylabel=r'$r_0$',xscale='log',yscale='log')
+#fig.savefig('plots_to_sort/rho0_r0.png')
+
+
+if 'alpha_proxy' not in dir() and False:
     do_all_plots=True
     div_v=[]
     v_over_r=[]
@@ -177,4 +243,24 @@ if 'alpha_proxy' not in dir() or True:
             plt.close(fig)
 
 
-"""
+if 1:
+    mass=nar(mass)
+    fig, axes=plt.subplots(2,2)
+    ax0 = axes[0][0]; ax1=axes[0][1]
+    ax2 = axes[1][0]; ax3=axes[1][1]
+    ax0.scatter(density_0,alpha)
+    ax1.scatter(mass,alpha)
+    ax2.scatter(total_volume,alpha)
+    ax3.scatter(total_volume,mass)
+    davetools.axbonk(ax0,ylabel=r'$\alpha$', xlabel=r'$\langle \rho \rangle$', xscale='log',yscale='linear')
+    davetools.axbonk(ax1,ylabel=r'$\alpha$', xlabel=r'$M(t=0)$', xscale='log',yscale='linear')
+    vol_lim=[min(total_volume),max(total_volume)]
+    mass_lim=[min(mass),max(mass)]
+    davetools.axbonk(ax2,ylabel=r'$\alpha$', xlabel=r'$V(t=0)$', xscale='log',yscale='linear',xlim=vol_lim)
+    davetools.axbonk(ax3,ylabel=r'$M(t=0)$', xlabel=r'$V(t=0)$', xscale='log',yscale='log',xlim=vol_lim,ylim=mass_lim)
+    ax1.set_xlim(mass.min(),mass.max())
+    outname = '%s/alpha_mass.png'%dl.output_directory
+    fig.savefig(outname)
+    print(outname)
+
+

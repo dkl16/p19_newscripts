@@ -12,7 +12,10 @@ out_prefix = 'CHANGE_THIS_PREFIX'
 out_prefix='test'
 file_list = file_list[:2]
 
-
+import tools_tracks.alpha_properties as ap 
+this_looper=ap.this_looper
+thtr=this_looper.tr
+thtr.sort_time()
 if 'this_looper' not in dir():
     this_looper=looper.core_looper(directory=dl.enzo_directory)
     for nfile,fname in enumerate(file_list):
@@ -29,9 +32,14 @@ fig_many, ax_many = plt.subplots(1,1)
 asort =  np.argsort(thtr.times)
 n0=asort[0]
 tsorted = thtr.times[asort]
-fig,ax=plt.subplots(1,1)
-for nc,core_id in enumerate(core_list):
+#fig,ax=plt.subplots(1,1)
+fig,axes=plt.subplots(1,2)
+ax=axes[0]; ax1=axes[1]
+rext = extents()
+vext = extents()
+for nc,core_id in enumerate([14]):
     ax.clear()
+    ax1.clear()
     ms = trackage.mini_scrubber(thtr,core_id)
     density = thtr.c([core_id],'density')
     #if field in thtr.track_dict.keys():
@@ -48,8 +56,23 @@ for nc,core_id in enumerate(core_list):
         #c = color_map.to_rgba(np.log10(density[npart,n0]))
         c = color_map.to_rgba(density[npart,n0])
         #ax.plot( tsorted, density[npart,asort],c='k',linestyle=':',marker='*')
-        ax.plot( tsorted, the_field[npart,asort],c=c,linewidth=.1)#linestyle=':')
+        pos = the_field[npart,asort]
+        tcen = 0.5*(tsorted[:-1]+tsorted[1:])
+        dt = tsorted[1:]-tsorted[:-1]
+        dpos = pos[1:]-pos[:-1]
+        drdt = dpos/dt
+        if drdt.max() * drdt.min() > 0:
+            continue
+
+        ok = dt!=0
+        ax.plot( tsorted, pos,c=c,linewidth=.1)#linestyle=':')
+        ax1.plot( tcen[ok], drdt[ok],c=c,linewidth=.1)#linestyle=':')
+        rext(pos)
+        vext(drdt[ok])
     axbonk(ax,xscale='linear',yscale='linear',xlabel='t',ylabel=r'$r$')
+    ax1.set_yscale('symlog',linthreshy=1)
+    ax1.set_ylim(vext)
+    ax.set_ylim(rext)
     oname = "%s/%s_%s_time_c%04d"%(dl.output_directory,out_prefix,'radius',core_id)
     fig.savefig(oname)
     print(oname)

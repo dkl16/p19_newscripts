@@ -25,6 +25,19 @@ import trackage
 import tracks_read_write
 import os
 
+def count_particles(fname='tools_data/n_particles.txt'):
+    fptr = open(fname,'r')
+    lines=fptr.readlines()
+    fptr.close()
+    parts = np.zeros([len(lines),2])
+    pd = {}
+    for n,line in enumerate(lines):
+        parts[n] = np.array(line.split(),dtype='int')
+    pd = dict( zip( parts[:,0], parts[:,1]))
+    return pd
+
+
+
 def get_all_nonzero(fname='tools_data/n_particles.txt'):
     fptr = open(fname,'r')
     lines=fptr.readlines()
@@ -66,7 +79,7 @@ class core_looper():
     def __init__(self,savefile=None,
                  directory="./", data_template = "%s/DD%04d/data%04d", sim_name='sim',
                  out_prefix="",
-                 frame_list=[], core_list=None, target_frame=0,
+                 frame_list=[], core_list=[], target_frame=0,
                  fields_from_grid = [], 
                  individual_particle_tracks=False,
                  derived=[]):

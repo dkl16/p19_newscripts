@@ -35,9 +35,14 @@ def add_energies(obj):
             gz =data.ds.arr(grad(data,'PotentialField',2),'code_length/code_time**2')
             alpha = 1./data.ds['GravitationalConstant'] #=1/4 pi G
             alpha = data.ds.quan(alpha, '1/(code_length**3/code_time**2/code_mass)')
-            return ( (gx**2+gy**2+gz**2)*alpha )
+            return ( -(gx**2+gy**2+gz**2)*alpha )
         obj.add_field('grav_energy',grav_energy,validators=[yt.ValidateGridType()],
                  units='code_mass*code_length**2/(code_time**2*code_length**3)', sampling_type='cell')
+        def abs_grav_energy(field,data):
+            return np.abs( data['grav_energy'] )
+        obj.add_field('abs_grav_energy',abs_grav_energy,validators=[yt.ValidateSpatial(1,'PotentialField')],
+                 units='code_mass*code_length**2/(code_time**2*code_length**3)', sampling_type='cell')
+
     def therm_energy(field,data):
         sound_speed = data.ds.quan(1.,'code_velocity')
         rho_0 = data.ds.quan(1.,'code_mass/code_length**2')
@@ -51,7 +56,17 @@ def add_test_energies(obj):
         gx =data.ds.arr(grad(data,'PotentialField',0),'code_length/code_time**2')
         return gx
     obj.add_field('gx',gx,validators=[yt.ValidateGridType()],
-                 units='code_length/code_time**2', sampling_type='cell')
+                 units='code_length/code_time**2',sampling_type='cell')
+    def gy(field,data):
+        gy =data.ds.arr(grad(data,'PotentialField',1),'code_length/code_time**2')
+        return gy
+    obj.add_field('gy',gy,validators=[yt.ValidateGridType()],
+                 units='code_length/code_time**2',sampling_type='cell')
+    def gz(field,data):
+        gz =data.ds.arr(grad(data,'PotentialField',2),'code_length/code_time**2')
+        return gz
+    obj.add_field('gz',gz,validators=[yt.ValidateGridType()],
+                 units='code_length/code_time**2',sampling_type='cell')
 
 def add_force_terms(obj):
     def momentum_flux(field,data):

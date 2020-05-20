@@ -11,6 +11,17 @@ import xtra_energy
 import data_locations as dl
 all_nonzero = looper.get_all_nonzero()
 
+output_base = "CORES"
+if 1:
+    """this set of parameters extracts all primitive quantities"""
+    core_list = [0,1] # all_nonzero.astype('int')
+    frame_list = [0,1]#+list(range(10,130,10))+[125]
+    fields = ['x','y','z','velocity_magnitude','magnetic_field_strength', 'velocity_divergence']
+    fields += ['velocity_x','velocity_y','velocity_z']
+    fields += ['magnetic_field_%s'%s for s in 'xyz']
+    output_base = "primitive_test"
+    derived=[]
+
 if 0:
     """this set of parameters extracts all primitive quantities"""
     core_list = all_nonzero.astype('int')
@@ -21,7 +32,7 @@ if 0:
     output_base = "all_primitives"
     derived=[]
 
-if 1:
+if 0:
     """This set extracts magnetic work"""
     core_list = all_nonzero.astype('int')
     frame_list =[0,1]+list(range(10,130,50))+[125]

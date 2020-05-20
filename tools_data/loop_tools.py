@@ -100,22 +100,30 @@ def get_leaf_indices(ds,c_min=None,c_max=None,step=100,h5_name="",pickle_name=No
     #for nc,indices in enumerate(leaf_indices):
      #   pw_full.annotate_select_particles(1.0, col='r', indices=indices)
    # pw_full.save(fname)
-def shift_particles(ds, position,shift = np.zeros(3),shiftRight = False):
+def shift_particles(ds=None, position=None,shift = np.zeros(3),shiftRight = False,grid_quan=None):
     """Shifts a periodically separated clump by the domain width.
     Looks for gaps in the positions larger than max('dx'), shifts one group
     to the right (left if shiftRight=Flase) to be spatially contiguous."""
     #max_dx may not be computed in the most efficient way.
-    DomainLeft = ds.domain_left_edge
-    DomainRight =  ds.domain_right_edge
-    DomainWidth = DomainRight - DomainLeft
+    if ds is not None:  
+        DomainLeft = ds.domain_left_edge
+        DomainRight =  ds.domain_right_edge
+        DomainWidth = DomainRight - DomainLeft
+        max_dx = ds.index.grids[0].dds.max().in_units('code_length')
+        min_dx = ds.index.get_smallest_dx()
+    if grid_quan is not None:
+        DomainLeft  = grid_quan["DomainLeft"]
+        DomainRight = grid_quan["DomainRight"]
+        DomainWidth = grid_quan["DomainWidth"]
+        max_dx      = grid_quan["max_dx"]
+        min_dx      = grid_quan["min_dx"]
+
     shifted=copy.copy(position)
     for i,axis in enumerate(['x','y','z']):
 
         dx = 'd'+axis
         nique = np.unique(shifted[:,i])
         nique.sort()
-        max_dx = ds.index.grids[0].dds.max().in_units('code_length')
-        min_dx = ds.index.get_smallest_dx()
 
         #has to be close to the edges, or 'Periodic Wrap' isn't the problem.
         if np.abs(nique.max() - DomainRight[i]) > 3*max_dx:
@@ -195,7 +203,7 @@ class NewSelectParticleCallback(PlotCallback):
     An alternate data source can be specified with *data_source*, but by
     default the plot's data source will be queried.
     """
-    _type_name = "select_particles"
+    _type_name = "select_particles_old"
     region = None
     _descriptor = None
     _supported_geometries = ("cartesian", "spectral_cube", "cylindrical-2d")

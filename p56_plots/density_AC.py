@@ -43,19 +43,19 @@ def make_k_freqs(nk,real=False, d=1):
 
 
 
-if 0:
+if 1:
     #sims
-    if 0:   
+    if 1:   
         """this is what you want to do."""
         directory = '/scratch2/dcollins/Paper19_48/B02/u05-r4-l4-128/GravPotential'
         ds = yt.load("%s/DD%04d/data%04d"%(directory,0,0))
         prefix='u05'
-    if 1:
+    if 0:
         """a test"""
         directory = "/scratch1/dcollins/Paper19/u21_sphere_large"
         ds = yt.load("%s/DD%04d/data%04d"%(directory,0,0))
         prefix='u21'
-    if 1:
+    if 0:
         """a smaller test test"""
         directory = "/scratch1/dcollins/Paper19/u22_sphere_128"
         ds = yt.load("%s/DD%04d/data%04d"%(directory,0,0))
@@ -66,38 +66,60 @@ if 0:
     cg=ds.covering_grid(0,left,resolution)#,num_ghost_zones=num_ghost_zones)
 
     rho = cg['density'].v -1 #[:40,:40,:40]
+    size = rho.shape[0]
+    dx = 1./size
+    x,y,z = np.mgrid[0:size:1,0:size:1,0:size:1]
+    xcen, ycen, zcen= size/2.,size/2., size/2.
+    rmag = np.sqrt((x-xcen)**2 + (y-ycen)**2+ (z-zcen)**2)
+
+R_sphere = 0.25
+if 0:
+    prefix='sphere_128'
+    size=128
+    dx = 1./size
+    x,y,z = np.mgrid[0:size:1,0:size:1,0:size:1]
+
+    xcen, ycen, zcen= size/2.,size/2., size/2.
+    rmag = np.sqrt((x-xcen)**2 + (y-ycen)**2+ (z-zcen)**2)
+    rho = np.zeros_like(rmag)
+    rho[ rmag < x.shape[0]/4] = 1.
 
 if 0:
-    #3d
     prefix='sphere'
-    dx = 1./128
-    R_sphere = 0.25
-    x,y = np.mgrid[0:size:1 , 0:size:1]
-    #x,y,z = np.mgrid[0:1:dx,0:1:dx, 0:1:dx]
-    rmag = np.sqrt( (x-0.5)**2+(y-0.5)**2+(z-0.5)**2)
-    rho = np.zeros_like(x)
-    rho[ r<R_sphere] = 0.5
-    prefix="test"
-    rho = np.zeros_like(rmag)
-    radius=8
-    rho[ rmag<radius] = 1
+    size=64
+    dx = 1./size
+    x,y,z = np.mgrid[0:size:1,0:size:1,0:size:1]
 
-if 1:
+    xcen, ycen, zcen= size/2.,size/2., size/2.
+    rmag = np.sqrt((x-xcen)**2 + (y-ycen)**2+ (z-zcen)**2)
+    rho = np.zeros_like(rmag)
+    rho[ rmag < x.shape[0]/4] = 1.
+
+
+if 0:
+    prefix='circle_manual'
+    size=64
+    dx = 1./size
+    x,y = np.mgrid[0:1:dx, 0:1:dx]
+    xcen, ycen = size/2.,size/2.
+    rmag = np.sqrt((x-xcen)**2 + (y-ycen)**2)
+    rho = np.zeros_like(rmag)
+    rho[ rmag < x.shape[0]/4] = 1.
+
+if 0:
     prefix='circle'
     size=64
     dx = 1./size
     x,y = np.mgrid[0:1:dx, 0:1:dx]
-    x,y = np.mgrid[0:size:1 , 0:size:1]
-    xcen, ycen = 0.5,0.5
     xcen, ycen = size/2.,size/2.
     dv = np.ones_like(x)*dx**3
     rmag = np.sqrt((x-xcen)**2 + (y-ycen)**2)
     rho = np.array(Image.open("circ.tif")).astype('float')
-    #rho = np.zeros_like(rmag)
-    #radius=8
-    #rho[ rmag<radius] = 1
 
 if 1:
+    #
+    # Do the AC. 
+    #
     rhohat = np.fft.fftn(rho)
     rho2 = rhohat*np.conj(rhohat)
     AC1 = np.fft.ifftn(rho2)
@@ -127,7 +149,7 @@ if 1:
     binned=rb.rb2( rmag, AC.real,bins=bins)
     a22.plot( binned[1],binned[2],c='r',label='binned ACfft')
 
-if 1:
+if 0:
     r1 = np.arange(31)/32 #rmag[33,33:]
     anne = 2.0*(np.arccos(r1)- r1*np.sqrt(1.0-r1**2))/np.pi;
     a22.plot(anne,c='g')

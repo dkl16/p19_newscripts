@@ -12,37 +12,6 @@ def powerlaw2(r, r0,alpha):
     rhosquared=1
     return alpha*np.log10(r/r0) + np.log10(rhosquared)
 axis=0
-def make_k_freqs(nk,real=False, d=1):
-    ny = nk
-    nz = nk
-    if real:
-        nz = nk//2+1
-
-    k_freq = np.zeros([3,nk,ny,nz])
-    k1=np.fft.fftfreq(nk,d=d)
-    #kx, ky, kz = np.meshgrid(k1,k1,k1)
-    #k_freq[0,...]=kx
-    #k_freq[1,...]=ky
-    #k_freq[2,...]=kz
-    x = np.repeat(k1,nk*nk)
-    x.shape = (nk,nk,nk)
-    y = np.repeat(k1,nk*nk)
-    y.shape = (nk,nk,nk)
-    y=y.swapaxes(0,1)
-    z = np.repeat(k1,nk*nk)
-    z.shape = (nk,nk,nk)
-    z=z.swapaxes(0,2)
-    if real:
-        x = x[:,:,:nz]
-        y = y[:,:,:nz]
-        z = z[:,:,:nz]
-    k_freq[0,...]=x
-    k_freq[1,...]=y
-    k_freq[2,...]=z
-    return k_freq
-
-
-
 if 1:
     #sims
     if 1:   
@@ -195,6 +164,37 @@ fig2.savefig('plots_to_sort/p56_convolve_4_%s.png'%prefix)
 print('saved')
 
 if 0:
+    def make_k_freqs(nk,real=False, d=1):
+        ny = nk
+        nz = nk
+        if real:
+            nz = nk//2+1
+
+        k_freq = np.zeros([3,nk,ny,nz])
+        k1=np.fft.fftfreq(nk,d=d)
+        #kx, ky, kz = np.meshgrid(k1,k1,k1)
+        #k_freq[0,...]=kx
+        #k_freq[1,...]=ky
+        #k_freq[2,...]=kz
+        x = np.repeat(k1,nk*nk)
+        x.shape = (nk,nk,nk)
+        y = np.repeat(k1,nk*nk)
+        y.shape = (nk,nk,nk)
+        y=y.swapaxes(0,1)
+        z = np.repeat(k1,nk*nk)
+        z.shape = (nk,nk,nk)
+        z=z.swapaxes(0,2)
+        if real:
+            x = x[:,:,:nz]
+            y = y[:,:,:nz]
+            z = z[:,:,:nz]
+        k_freq[0,...]=x
+        k_freq[1,...]=y
+        k_freq[2,...]=z
+        return k_freq
+
+
+
     if 'AC3d' not in dir() or True:
         print('Correlate')
         AC3d=scipy.signal.correlate(rho,rho,mode='same',method='fft')

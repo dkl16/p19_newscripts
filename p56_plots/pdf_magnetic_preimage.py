@@ -58,7 +58,7 @@ if 1:
     deposit_tuple = ("deposit","target_particle_volume")
     #ad[deposit_tuple]
         
-if 'prof_mask_density' not in dir():
+if 'prof_mask_field' not in dir():
     all_target_indices = np.concatenate( [this_looper.target_indices[core_id] for core_id in core_list])
     ad.set_field_parameter('target_indices',all_target_indices)
     ad.set_field_parameter('mask_to_get',np.zeros_like(all_target_indices,dtype='int32'))
@@ -66,28 +66,27 @@ if 'prof_mask_density' not in dir():
     #bins['PotentialField']= np.linspace(-50,50,64)
     bins=None
     print('PROFILE density')
-    prof_all_density  = yt.create_profile(ad,bin_fields=['density'],fields=['cell_volume'],weight_field=None, override_bins=bins)
+    prof_all_field  = yt.create_profile(ad,bin_fields=['magnetic_field_strength'],fields=['cell_volume'],weight_field=None, override_bins=bins)
     print('PROFILE deposit target')
-    prof_mask_density = yt.create_profile(ad,bin_fields=['density'],fields=[deposit_tuple],weight_field=None, override_bins=bins)
+    prof_mask_field = yt.create_profile(ad,bin_fields=['magnetic_field_strength'],fields=[deposit_tuple],weight_field=None, override_bins=bins)
     print('PROFILE DONE')
 
-if 1:
-    #get data
-    bbb1, bcen1, vals1, db= toplot(prof_all_density)
-    bbb2, bcen2, vals2, db = toplot(prof_mask_density,quan=deposit_tuple[1])
+
 
 if 1:
-    fig,ax=plt.subplots(1,1)
-    ax.plot( bcen1,vals1,'k',linewidth=2, label=r'$V(\rho)$')
-    ax.plot( bcen2,vals2,'k--',linewidth=2, label=r'$V(\rho|*)$')
-
-
-if 0:
+    #get quantities from profile objects
+    bbb1, bcen1, vals1, db= toplot(prof_all_field)
+    bbb2, bcen2, vals2, db = toplot(prof_mask_field,quan=deposit_tuple[1])
     #fit for gaussians
     fits1, cov1 = curve_fit(gaussian,np.log10(bcen1),vals1, p0=[1,1,1])
     a1, mu1, sig1 = fits1
     fits2, cov2 = curve_fit(gaussian,np.log10(bcen2),vals2, p0=[1,1,1])
     a2, mu2, sig2 = fits2
+
+if 1:
+    fig,ax=plt.subplots(1,1)
+    ax.plot( bcen1,vals1,'k',linewidth=2, label=r'$V(B)$')
+    ax.plot( bcen2,vals2,'k--',linewidth=2, label=r'$V(B|*)$')
 
 if 0:
     #overplot gaussians
@@ -100,13 +99,12 @@ if 1:
     Pstar = 1./128**3*211  
     ok = bcen1>0.1
     ok = np.logical_and(ratio>0, ok)
-    ax.plot( bcen1[ratio>0], ratio[ratio>0],label=r"$V(*|\rho)$",c=[0.5]*4)
+    ax.plot( bcen1[ratio>0], ratio[ratio>0],label=r"$V(*|B)$",c=[0.5]*4)
 
 if 1:
-    #plot rho^2 P(rho)
-    p_star_given_rho = vals1*bcen1**0.5
+    p_star_given_rho = vals1#*bcen1**0.5
     p_star_given_rho *= vals2.max()/p_star_given_rho.max()
-    ax.plot( bcen1,p_star_given_rho,linewidth=2, label=r'$\eta \rho^{1/2}P(\rho)$', linestyle='--',c=[0.5]*4)
+    ax.plot( bcen1,p_star_given_rho,linewidth=2, label=r'$\eta V(B)$', linestyle='--',c=[0.5]*4)
 
 if 0:
     #fit powerlaw for ratio
@@ -125,10 +123,10 @@ if 0:
 
 if 1:
     #ax.plot( bcen2,vals2*vals1.max()/vals2.max(),'r:')
-    outname = "plots_to_sort/pdf_density_preimage_fits.pdf"
+    outname = "plots_to_sort/pdf_field_preimage_fits.pdf"
     #axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='log',yscale='log')
     #axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='linear',yscale='linear')
-    axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='log',yscale='log')
+    axbonk(ax,xlabel=r'$B$',ylabel='V(B)',xscale='log',yscale='log')
     ax.legend(loc=3)
     fig.savefig(outname)
     print(outname)

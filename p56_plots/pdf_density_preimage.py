@@ -31,7 +31,6 @@ if 'this_looper' not in dir() and False:
     this_looper.get_target_indices(h5_name='datasets_small/u05_0125_peaklist.h5',
                                      bad_particle_list='datasets_small/bad_particles.h5')
     this_looper.get_tracks()
-    this_looper.save('all_cores_n%04d.h5'%0)
 
 
 #import testing.cic_test as cic
@@ -80,6 +79,19 @@ if 1:
     fig,ax=plt.subplots(1,1)
     ax.plot( bcen1,vals1,'k',linewidth=2, label=r'$V(\rho)$')
     ax.plot( bcen2,vals2,'k--',linewidth=2, label=r'$V(\rho|*)$')
+
+if 1:
+    fig2, ax2=plt.subplots(1,1)
+    cuml_all  = np.cumsum(vals1)
+    cuml_mask = np.cumsum(vals2)
+    ax2.plot( bcen1, cuml_all/cuml_all[-1], c='k')
+    ax2.plot( bcen2, cuml_mask/cuml_mask[-1], 'k--')
+    #ax2.plot( bcen1,vals1,c='k')
+    #ax2.plot( bcen2,vals2,'k--')
+    axbonk(ax2,xlabel=r'$\rho$',ylabel=r'$\int V(rho)$',xscale='log',yscale='log')
+    outname = 'plots_to_sort/cuml_rho_n%04d.pdf'%(frame)
+    fig2.savefig(outname)
+    print(outname)
 
 
 if 0:

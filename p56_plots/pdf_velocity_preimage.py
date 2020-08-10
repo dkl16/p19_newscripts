@@ -46,6 +46,7 @@ def toplot(prof,quan = 'cell_volume'):
     pdf = prof[quan]
     pdf = pdf/bin_widths
     return xbins, bin_center,pdf,bin_widths
+
 def gaussian(the_x,norm,x0,sigma):
     #return norm*np.exp( -(the_x-x0)**2/(2*sigma**2))
     return norm/np.sqrt(2*np.pi*sigma**2)*np.exp( -(the_x-x0)**2/(2*sigma**2))
@@ -79,6 +80,21 @@ if 1:
     plt.close('all')
     bbb1, bcen1, vals1, db= toplot(prof_all_vel)
     bbb2, bcen2, vals2, db = toplot(prof_mask_vel,quan=deposit_tuple[1])
+
+if 1:
+    fig2, ax2=plt.subplots(1,1)
+    cuml_all  = np.cumsum(vals1)
+    cuml_mask = np.cumsum(vals2)
+    ax2.plot( bcen1, cuml_all/cuml_all[-1], c='k')
+    ax2.plot( bcen2, cuml_mask/cuml_mask[-1], 'k--')
+    #ax2.plot( bcen1,vals1,c='k')
+    #ax2.plot( bcen2,vals2,'k--')
+    axbonk(ax2,xlabel=r'$\rho$',ylabel=r'$\int V(rho)$',xscale='log',yscale='log')
+    outname = 'plots_to_sort/cuml_v_n%04d.pdf'%(frame)
+    fig2.savefig(outname)
+    print(outname)
+
+if 0:
     fig,ax=plt.subplots(1,1)
 
     ok1 = vals1>0
@@ -93,6 +109,7 @@ if 1:
 if 1:
     #maxwellian
     v = bcen1[ok2]
+    sigmav = vrms
     maxwell = 1./(2*np.pi*sigmav**2)*v**2*np.exp(-(v-0)**2/(2*sigmav**2))
     ok3 = maxwell > 1e-7
     ax.plot( v[ok3], maxwell[ok3] , label=r'$\sigma_{v,1d}=%0.1f$'%vrms)
@@ -137,7 +154,7 @@ if 1:
     outname = "plots_to_sort/pdf_velocity_preimage_fits.pdf"
     #axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='log',yscale='log')
     #axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='linear',yscale='linear')
-    axbonk(ax,xlabel=r'$||v||',ylabel='V(||v||)',xscale='log',yscale='log')
+    axbonk(ax,xlabel=r'$||v||$',ylabel=r'$V(||v||)$',xscale='log',yscale='log')
     ax.legend(loc=3)
     fig.savefig(outname)
     print(outname)

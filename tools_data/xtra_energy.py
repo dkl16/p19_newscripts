@@ -24,7 +24,7 @@ def grad(data,fieldname,direction):
     return out
 
 def add_energies(obj):
-    if obj.parameters['SelfGravity'] and False:
+    if obj.parameters['SelfGravity']:
         def grav_energy(field,data):
             gx =data.ds.arr(grad(data,'PotentialField',0),'code_length/code_time**2')
             gy =data.ds.arr(grad(data,'PotentialField',1),'code_length/code_time**2')

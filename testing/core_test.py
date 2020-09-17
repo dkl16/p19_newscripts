@@ -1,3 +1,4 @@
+from starter2 import *
 
 
 import matplotlib
@@ -18,7 +19,9 @@ reload(loop_tools)
 
 
 
-directory = '/scratch2/dcollins/Paper19_48/B02/u05-r4-l4-128'
-ds = yt.load("%s/DD%04d/data%04d"%(directory,109,109))
+#directory = 'u05-r4-l4-128-Beta0.2  u10_r4_l4_128-Beta2  u11_r4_l4_128-Beta20'
+directory = "/archive2/dcollins4096/Paper19/u10_r4_l4_128-Beta2"; frame=82; h5name='NEW_fixme.h5'
+directory = "/archive2/dcollins4096/Paper19/u11_r4_l4_128-Beta20"; frame=88; h5name='u11_peaks.h5'
+ds = yt.load("%s/DD%04d/data%04d"%(directory,frame,frame))
 
-leaves = loop_tools.get_leaf_indices(ds) #,h5_name="NEW_PEAKS.h5" )
+leaves = loop_tools.get_leaf_indices(ds,small_test=True, h5_name = h5name) #,h5_name="NEW_PEAKS.h5" )

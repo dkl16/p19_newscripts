@@ -3,33 +3,44 @@
 This displays what all the functions in loop_apps.py do.
 """
 from starter2 import *
+import data_locations as dl
 import xtra_energy
 reload(loop_apps)
 from scipy.optimize import curve_fit
-core_list=looper.get_all_nonzero()
+
+
+#
+#
+#
+
+this_simname = 'u10'
+
+
 frame_list=[0]# range(0,130,10)
+core_list=looper.get_all_nonzero(dl.n_particles[this_simname])
 fields=['density']  
 #Look for app_test.h5 and read from that.
 #If not, make a new looper and write app_test.h5.
 save_field = '../Datasets/all_cores_n0000.h5'
+save_field = '../Datasets/u10_primitives_cXXXX_n0000.h5'
 if 'this_looper' not in dir() and os.path.exists(save_field) and True:
-    directory = '/scratch2/dcollins/Paper19_48/B02/u05-r4-l4-128/GravPotential'
+    directory = dl.sims[this_simname]
     this_looper = looper.core_looper(directory= directory,savefile=save_field)
     this_looper.derived = [xtra_energy.add_force_terms] #for some reason derived quantities aren't saved.
 
 if 'this_looper' not in dir() and False:
-    directory = '/scratch2/dcollins/Paper19_48/B02/u05-r4-l4-128/GravPotential'
+    directory = dl.sims[this_simname]
     this_looper = looper.core_looper(directory= directory,
                                      derived=[],
-                                     sim_name = 'u05',
-                                     out_prefix = 'plots_to_sort/test',
-                                     target_frame = 125,
+                                     sim_name = this_simname,
+                                     out_prefix = 'plots_to_sort/%s_test'%this_simname,
+                                     target_frame = dl.target_frames[this_simname],
                                      frame_list = frame_list,
                                      core_list = core_list,
                                      fields_from_grid=['x','y','z']+fields
                                   )
-    this_looper.get_target_indices(h5_name='datasets_small/u05_0125_peaklist.h5',
-                                     bad_particle_list='datasets_small/bad_particles.h5')
+    this_looper.get_target_indices(h5_name=dl.peaks[this_simname],
+                                     bad_particle_list=dl.bad_particles[this_simname])
     this_looper.get_tracks()
 
 
@@ -89,7 +100,7 @@ if 1:
     #ax2.plot( bcen1,vals1,c='k')
     #ax2.plot( bcen2,vals2,'k--')
     axbonk(ax2,xlabel=r'$\rho$',ylabel=r'$\int V(rho)$',xscale='log',yscale='log')
-    outname = 'plots_to_sort/cuml_rho_n%04d.pdf'%(frame)
+    outname = 'plots_to_sort/%s_cuml_rho_n%04d.pdf'%(this_simname,frame)
     fig2.savefig(outname)
     print(outname)
 
@@ -115,12 +126,6 @@ if 1:
     ax.plot( bcen1[ratio>0], ratio[ratio>0],label=r"$V(*|\rho)$",c=[0.5]*4)
 
 if 1:
-    #plot rho^2 P(rho)
-    p_star_given_rho = vals1*bcen1**0.5
-    p_star_given_rho *= vals2.max()/p_star_given_rho.max()
-    ax.plot( bcen1,p_star_given_rho,linewidth=2, label=r'$\eta \rho^{1/2}P(\rho)$', linestyle='--',c=[0.5]*4)
-
-if 0:
     #fit powerlaw for ratio
     from scipy.optimize import curve_fit
     def powerlaw(r,rho0, r0, alpha):
@@ -129,15 +134,22 @@ if 0:
 
 if 0:
     #plot powerlaws
-    ax.plot( bcen1[ok], 10**powerlaw(bcen1[ok], popt[0], popt[1],popt[2]))
-    ax.plot( bcen1[ok], 10**powerlaw(bcen1[ok], popt[0], popt[1],0.5))
-    ax.plot( bcen1, bcen1**popt[2]*gaussian(np.log10(bcen1), *fits1)*vals2.max(), 'k--', linewidth=2)
+    ax.plot( bcen1[ok], 10**powerlaw(bcen1[ok], popt[0], popt[1],popt[2]),label=r'$\rho^{%0.2f}$'%(popt[2]))
+    #ax.plot( bcen1[ok], 10**powerlaw(bcen1[ok], popt[0], popt[1],0.5))
+    #ax.plot( bcen1, bcen1**popt[2]*gaussian(np.log10(bcen1), *fits1)*vals2.max(), 'k--', linewidth=2)
+
+if 1:
+    #plot rho^2 P(rho)
+    p_star_given_rho = vals1*bcen1**popt[2]
+    p_star_given_rho *= vals2.max()/p_star_given_rho.max()
+    ax.plot( bcen1,p_star_given_rho,linewidth=2, label=r'$\eta \rho^{%0.2f}P(\rho)$'%popt[2], linestyle='--',c=[0.5]*4)
+
 
 
 
 if 1:
     #ax.plot( bcen2,vals2*vals1.max()/vals2.max(),'r:')
-    outname = "plots_to_sort/pdf_density_preimage_fits.pdf"
+    outname = "plots_to_sort/%s_pdf_density_preimage_fits.pdf"%this_simname
     #axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='log',yscale='log')
     #axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='linear',yscale='linear')
     axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='log',yscale='log')

@@ -9,13 +9,15 @@ import davetools
 import yt
 import fourier_tools_py3.fourier_filter as Filter
 
-def shell_average_only(power):
+def shell_average_raw(power):
     ff = Filter.FourierFilter(power)
     power_1d = np.array([power[ff.get_shell(bin)].sum() for bin in range(ff.nx)])
+    k_size = np.array([ff.get_shell(bin).sum() for bin in range(ff.nx)])
     kspace=ff.get_shell_k()
-    return power_1d, kspace
+    return kspace, power_1d, ff, k_size
+
 def shell_average(power,oober,frame,field,debug=-1,mark_time=None):
-    power_1d, kspace = shell_average_only(power)
+    kspace, power_1d, ff = shell_average_raw(power)
     filename = "%s/power_%s.h5"%(oober.product_dir(frame), field)
     if debug>0:
         print("Saved spectra %s"%filename)

@@ -45,10 +45,23 @@ ax41 = ax4[0][1]
 ax42 = ax4[1][0]
 ax43 = ax4[1][1]
 
+do_vel_extent=False
+if 'vel_ext' not in dir():
+    vel_ext = extents()
+    do_vel_extent=True
+
 for nc,core_id in enumerate(core_list):
 
     #miniscrubber computes distance, r^2, several other quantities
     ms = trackage.mini_scrubber(thtr,core_id,do_velocity=True)
+
+    if do_vel_extent:
+        vel_ext(ms.rel_vx)
+        vel_ext(ms.rel_vy)
+        vel_ext(ms.rel_vz)
+        vel_ext(ms.rel_v2**0.5)
+        continue
+
     for ax in [axd1,ax40,ax41,ax42,ax43]:
         ax.clear()    
 
@@ -57,8 +70,6 @@ for nc,core_id in enumerate(core_list):
     if ms.nparticles == 1:
         continue
 
-
-    print('yay',core_id)
     asort =  np.argsort(thtr.times)
     density = thtr.c([core_id],'density')
     if (asort != sorted(asort)).any():
@@ -78,13 +89,13 @@ for nc,core_id in enumerate(core_list):
 
         if 0:
             axd1.scatter(ms.vr_rel,ms.rel_v2**0.5,c=c[0:1],label=thtr.times[n_time],s=0.1)
-        if  0:
-            outname4 = '%s/vi_r_c%04d'%(dl.output_directory,core_id)
+        if  1:
+            outname4 = '%s/vi_r_symlog_c%04d'%(dl.output_directory,core_id)
             ax40.scatter(this_r, ms.rel_vx[:,n_time], c=c,s=0.1)
             ax41.scatter(this_r, ms.rel_vy[:,n_time], c=c,s=0.1)
             ax42.scatter(this_r, ms.rel_vz[:,n_time], c=c,s=0.1)
             ax43.scatter(this_r, ms.rel_v2[:,n_time]**0.5, c=c,s=0.1)
-        if  1:
+        if  0:
             #!!!!
             outname4 = '%s/vi_r_raw_c%04d'%(dl.output_directory,core_id)
             ax40.scatter(this_r, ms.raw_vx[:,n_time], c=c,s=0.1)
@@ -126,12 +137,16 @@ for nc,core_id in enumerate(core_list):
             #axd1.plot([-10,0],[10,0],c='k')
             #axd1.scatter( harmonic_r, mean_vr, c=c[0:1], marker='*')
 
+    limits = np.abs(vel_ext.minmax).max()
+    limits = [-limits,limits]
     #axd1.plot([ms.r.min(),ms.r.max()], [1,1], c=[0.5]*4)
     labs = ['vx','vy','vz','vtotal']
     for iii,ax4i in enumerate([ax40,ax41,ax42,ax43]):
-        davetools.axbonk(ax4i,xlabel='r',ylabel=labs[iii],yscale='linear')
+        davetools.axbonk(ax4i,xlabel='r',ylabel=labs[iii],ylim=limits)
         ax4i.set_xscale('symlog',linthreshx=1./2048)
+        ax4i.set_yscale('symlog',linthreshy=2)
         ax4i.set_xlim([0,1])
+    ax43.set_ylim([0,limits[1]])
     if 0:
         davetools.axbonk(axd1,xscale='linear',yscale='linear',xlabel='vr_rel',ylabel=r'$v_r/v_{total}$')
                          #xlim=[-15,15], ylim=[0,15])

@@ -2,6 +2,7 @@ import yt
 import matplotlib.pyplot as plt
 from yt.visualization.plot_modifications import *
 import pyximport; pyximport.install()
+from scipy.spatial import ConvexHull
 import particle_ops
 import particle_grid_mask
 import h5py
@@ -16,21 +17,24 @@ from yt.data_objects.level_sets.clump_handling import \
             find_clumps, \
             get_lowest_clumps
 
-def get_leaf_indices(ds,c_min=None,c_max=None,step=100,h5_name="",pickle_name=None, 
-                     subset=None, peak_radius=1.5,bad_particle_list=None):
+def get_leaf_indices(ds,c_min=None,c_max=None,step=100,h5_name="NEW_PEAK_FILE.h5",pickle_name=None, 
+                     subset=None, peak_radius=1.5,bad_particle_list=None, small_test=False):
     """get all the leaf indices for peaks in *ds*.
     If *pickle_name* is supplied, load from that, or if it doesn't exist, save to that.
     *subset*, if supplied, will restrict the indices returned.
     """
     if not os.path.exists(h5_name):
-        print("WARNING: clump finding not tested.")
-        print("You're probably missing the file u05_0125_peaklist.h5")
-        raise
-        ad = ds.all_data()
+
+        if small_test:
+            #center = ds.arr([0.07104492, 0.05688477, 0.1862793 ],'code_length')
+            peak,center=ds.find_max('density')
+            ad = ds.sphere(center,0.1)
+        else:
+            ad = ds.all_data()
         #ad  = ds.sphere([0.52075195, 0.74682617, 0.01196289], 0.1)
         master_clump = Clump(ad,('gas','density'))
         master_clump.add_validator("min_cells", 8)
-        c_min = 1 #ad["gas", "density"].min()
+        c_min = 10 #ad["gas", "density"].min()
         #c_max = 534069645. # ad["gas", "density"].max()
         c_max = ad["gas", "density"].max()
         step = 100
@@ -58,7 +62,7 @@ def get_leaf_indices(ds,c_min=None,c_max=None,step=100,h5_name="",pickle_name=No
             this_peak = ds.arr([a,b,c],'code_length')
             peak_list.append(this_peak)
         #fPickle.dump(peak_list, pickle_name)
-        fptr=h5py.File("NEW_PEAKS.h5",'w')
+        fptr=h5py.File(h5_name,'w')
         fptr.create_dataset('peaks',data=np.array(peak_list))
         fptr.close()
     else:
@@ -203,7 +207,7 @@ class NewSelectParticleCallback(PlotCallback):
     An alternate data source can be specified with *data_source*, but by
     default the plot's data source will be queried.
     """
-    _type_name = "select_particles_old"
+    _type_name = "select_particles"
     region = None
     _descriptor = None
     _supported_geometries = ("cartesian", "spectral_cube", "cylindrical-2d")
@@ -324,3 +328,4 @@ class NewSelectParticleCallback(PlotCallback):
             return self.region
         self.region = data.ds.region(data.center, LE, RE, data_source=self.data_source)
         return self.region
+

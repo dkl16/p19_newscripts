@@ -194,22 +194,30 @@ if 1:
     ax2 = axes[1][0]; ax3=axes[1][1]
     ax0.scatter(density_0,alpha,c=rate_list)
     ax1.scatter(mass,alpha,c=rate_list)
+
+    fig2, axes2=plt.subplots(1,1)
+    bx0 = axes2
     if 'collapse_times' in dir(): #collapse_time can be found from density_time.py
         ok = nar(collapse_times) > 0
         t_ok=nar(collapse_times)[ok]
         ax2.scatter(t_ok, nar(alpha)[ok])
         ax3.scatter(t_ok, nar(mass)[ok],c=nar(rate_list)[ok])
+        bx0.scatter(t_ok, nar(density_0)[ok])
+        #ax3.scatter(t_ok, nar(density_0)[ok],c=nar(rate_list)[ok])
         pdb.set_trace()
 
     davetools.axbonk(ax0,xlabel=r'$\langle \rho \rangle$',ylabel=r'$\alpha$',  xscale='log',yscale='linear')
     davetools.axbonk(ax1,xlabel=r'$M(t=0)$',              ylabel=r'$\alpha$',   xscale='log',yscale='linear')
     davetools.axbonk(ax2,xlabel=r'$t_c$',                 ylabel=r'$\alpha$', xscale='log',yscale='linear')
     davetools.axbonk(ax3,xlabel=r'$t_c$',                 ylabel=r'$M(t=0)$',  xscale='log',yscale='log')
+    davetools.axbonk(bx0,xlabel=r'$t_c$',   ylabel=r'$\langle \rho \rangle$',  xscale='log',yscale='linear')
     ax3.set_xlim([t_ok.min(),t_ok.max()])
     ax3.set_ylim(mass.min(),mass.max())
     ax1.set_xlim(mass.min(),mass.max())
     outname = '%s/alpha_mass.png'%dl.output_directory
     fig.savefig(outname)
+    outname2 = '%s/tc_rho.png'%dl.output_directory
+    fig2.savefig(outname2)
     print(outname)
 
 if 0:

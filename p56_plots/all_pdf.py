@@ -7,18 +7,18 @@ reload(dl)
 reload(trackage)
 plt.close('all')
 
-file_list=glob.glob('%s/*h5'%dl.sixteen_frame)
-file_list = glob.glob("/scratch1/dcollins/Paper19/Datasets/all_primitives/*h5")
-#file_list = file_list[:20]
-out_prefix = 'CHANGE_THIS_PREFIX'
-
-out_prefix='test'
+this_simname = 'u11'
+out_prefix='u11'
 form = 'pdf'
+#file_list=glob.glob('%s/*h5'%dl.sixteen_frame)
+#file_list = glob.glob("/scratch1/dcollins/Paper19/Datasets/all_primitives/*h5")
+file_list = ["../Datasets/u11_primitives_cXXXX_n0000.h5"]; out_prefix='u11'
+
 #file_list = file_list[:2]
 
 
 if 'this_looper' not in dir():
-    this_looper=looper.core_looper(directory=dl.enzo_directory)
+    this_looper=looper.core_looper(directory=dl.sims[this_simname])
     for nfile,fname in enumerate(file_list):
         this_looper.load_loop(fname)
         print( "File %d of %d"%(nfile,len(file_list)))
@@ -27,6 +27,7 @@ if 'this_looper' not in dir():
     if  'dmeans' in dir():
         del dmeans, prof0, prof1, prof_vel
 all_cores = np.unique(thtr.core_ids)
+core_list=all_cores
 rm = rainbow_map(len(all_cores))
 
 tm = rainbow_map(15)
@@ -52,27 +53,28 @@ odir=os.environ['HOME']+'/PigPen/'
 odir = "./plots_to_sort/"
 
 if 'prof0' not in dir():
-    ds0 = yt.load("%s/DD%04d/data%04d"%(dl.enzo_directory,0,0))
-    ds1 = yt.load("%s/DD%04d/data%04d"%(dl.enzo_directory,125,125))
+    frame = dl.target_frames[this_simname]
+    ds0 = yt.load("%s/DD%04d/data%04d"%(dl.sims[this_simname],0,0))
+    ds1 = yt.load("%s/DD%04d/data%04d"%(dl.sims[this_simname],frame,frame))
     prof0=make_prof(ds0,['density','cell_volume'])
     prof1=make_prof(ds1,['density','cell_volume'])
 
 if 'prof_vel' not in dir():
-    ds = yt.load("%s/DD%04d/data%04d"%(dl.enzo_directory,0,0))
     prof_vel=make_prof(ds1,['velocity_magnitude','cell_volume'])
 
-#all_cores=all_cores[:5]
-all_densities={}
 if 'dmeans' not in dir() or True:
     dmeans = np.zeros_like(all_cores,dtype='float')
     dstds = np.zeros_like(all_cores,dtype='float')
-    logdmeans = np.zeros_like(all_cores,dtype='float')
-    logdstds  = np.zeros_like(all_cores,dtype='float')
+    d_logmeans = np.zeros_like(all_cores,dtype='float')
+    d_logstds  = np.zeros_like(all_cores,dtype='float')
+    v_logmeans = np.zeros_like(all_cores,dtype='float')
+    v_logstds  = np.zeros_like(all_cores,dtype='float')
     vmeans    = np.zeros_like(all_cores,dtype='float')
     vstds = np.zeros_like(all_cores,dtype='float')
     npart = np.zeros_like(all_cores,dtype='float')
     vrel  =  np.zeros_like(all_cores,dtype='float')
     volume =  np.zeros_like(all_cores,dtype='float')
+
     for i,nc in enumerate(all_cores):
         this_density = thtr.c(int(nc),'density')[:,0]
         npart[i] = this_density.size
@@ -81,13 +83,15 @@ if 'dmeans' not in dir() or True:
         volume[i] = this_volume.sum()
         dmeans[i]=this_density.mean()
         dstds[i] = this_density.std()
-        logdmeans[i]= np.log(this_density).mean()
-        logdstds[i] =  np.log(this_density).std()
+        d_logmeans[i]=np.exp(np.log(this_density).mean())
+        d_logstds[i] =np.exp(np.log(this_density).std())
+        v_logmeans[i]=np.exp(np.log(this_vel).mean())
+        v_logstds[i] =np.exp(np.log(this_vel).std())
         vmeans[i]= this_vel.mean()
         vstds[i] = this_vel.std()
 
 
-if 1:
+if 0:
     #relative and tangential histograms
     fig, axes=plt.subplots(2,2)
     axv0 = axes[0][0]
@@ -294,7 +298,8 @@ if 0:
         y(vstds[ok])
         axbonk(ax,xscale='linear',yscale='linear',xlim=x.minmax,ylim=y.minmax, xlabel=r'$\sigma_{\ln \rho}$', ylabel=r'$\sigma_v$')
         fig.savefig(odir+'/pre_logrho_rms_v_rms.%s'%form)
-if 0:
+
+if 1:
     if 1:
         ax.clear()
         ax.scatter(dstds[ok],vstds[ok])
@@ -310,6 +315,12 @@ if 0:
         ax.scatter(dmeans,vmeans)
         axbonk(ax,yscale='log', xscale='log', ylabel=r'$\langle v \rangle$', xlabel=r'$\langle \rho \rangle$')
         fig.savefig(odir+'/pre_rho_v_mean.%s'%form)
+
+    if 1:
+        ax.clear()
+        ax.errorbar(d_logmeans,v_logmeans, xerr=d_logstds, yerr=v_logstds)
+        axbonk(ax,yscale='log', xscale='log', ylabel=r'$\langle v \rangle$', xlabel=r'$\langle \rho \rangle$')
+        fig.savefig(odir+'/%s_pre_rho_v_log_errb.%s'%(this_simname,form))
 
 if 0:
     ax.clear()

@@ -6,24 +6,6 @@ import data_locations as dl
 reload(dl)
 plt.close('all')
 
-if 'this_simname' not in dir():
-    this_simname = 'u11'
-file_list=glob.glob(dl.every_ten[this_simname])
-
-out_prefix="%s_"%this_simname
-#file_list = file_list[:2]
-
-if 'this_looper' not in dir():
-    this_looper=looper.core_looper(directory=dl.sims[this_simname])
-    for nfile,fname in enumerate(file_list):
-        this_looper.load_loop(fname)
-        print( "File %d of %d"%(nfile,len(file_list)))
-    thtr = this_looper.tr
-    thtr.sort_time()
-all_cores = np.unique(thtr.core_ids)
-rm = rainbow_map(len(all_cores))
-
-#if 'collapse_times' not in dir():
 class trial():
     def __init__(self):
         self.collapse_times=[]
@@ -169,6 +151,25 @@ class trial():
                 oname = "%s/%s_density_6_c%04d"%(dl.output_directory,out_prefix,core_id)
                 fig.savefig(oname)
                 print("Saved "+oname)
+
+if 'this_simname' not in dir():
+    this_simname = 'u11'
+
+out_prefix="%s_"%this_simname
+#file_list = file_list[:2]
+
+if 'this_looper' not in dir():
+    file_list=glob.glob(dl.every_ten[this_simname])
+    this_looper=looper.core_looper(directory=dl.sims[this_simname])
+    for nfile,fname in enumerate(file_list):
+        this_looper.load_loop(fname)
+        print( "File %d of %d"%(nfile,len(file_list)))
+    thtr = this_looper.tr
+    thtr.sort_time()
+all_cores = np.unique(thtr.core_ids)
+rm = rainbow_map(len(all_cores))
+
+#if 'collapse_times' not in dir():
 
 if 'other_looper' not in dir():
     other_looper=looper.core_looper(directory=dl.sims['u05'])

@@ -12,12 +12,13 @@ for directory in path_list:
         sys.path += [directory]
 
 import yt
+
 import looper
 reload(looper)
 import trackage
 reload(trackage)
-#from core_dump import *
 
+import data_locations as dl
 
 import looper
 reload(looper)

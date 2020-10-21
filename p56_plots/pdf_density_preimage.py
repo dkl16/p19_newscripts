@@ -13,7 +13,8 @@ from scipy.optimize import curve_fit
 #
 #
 
-this_simname = 'u10'
+if 'this_simname' not in dir():
+    this_simname = 'u11'
 
 
 frame_list=[0]# range(0,130,10)
@@ -23,7 +24,8 @@ fields=['density']
 #If not, make a new looper and write app_test.h5.
 save_field = '../Datasets/all_cores_n0000.h5'
 save_field = '../Datasets/u10_primitives_cXXXX_n0000.h5'
-if 'this_looper' not in dir() and os.path.exists(save_field) and True:
+save_field = '../Datasets/u11_primitives_cXXXX_n0000.h5'
+if 'this_looper' not in dir() and os.path.exists(save_field):
     directory = dl.sims[this_simname]
     this_looper = looper.core_looper(directory= directory,savefile=save_field)
     this_looper.derived = [xtra_energy.add_force_terms] #for some reason derived quantities aren't saved.
@@ -80,6 +82,9 @@ if 'prof_mask_density' not in dir():
     print('PROFILE deposit target')
     prof_mask_density = yt.create_profile(ad,bin_fields=['density'],fields=[deposit_tuple],weight_field=None, override_bins=bins)
     print('PROFILE DONE')
+    prof_all_density.save_as_dataset('%s_density_pdf_all_n0000.h5'%this_simname)
+    prof_mask_density.save_as_dataset('%s_density_pdf_mask_n0000.h5'%this_simname)
+
 
 if 1:
     #get data
@@ -120,7 +125,6 @@ if 0:
 if 1:
     #comput and plot the ratio
     ratio = vals2/vals1
-    Pstar = 1./128**3*211  
     ok = bcen1>0.1
     ok = np.logical_and(ratio>0, ok)
     ax.plot( bcen1[ratio>0], ratio[ratio>0],label=r"$V(*|\rho)$",c=[0.5]*4)
@@ -140,9 +144,14 @@ if 0:
 
 if 1:
     #plot rho^2 P(rho)
+    n=0
+    for core in this_looper.target_indices:
+        n+=this_looper.target_indices[core].size
+    eta1 = n/128**3
     p_star_given_rho = vals1*bcen1**popt[2]
-    p_star_given_rho *= vals2.max()/p_star_given_rho.max()
-    ax.plot( bcen1,p_star_given_rho,linewidth=2, label=r'$\eta \rho^{%0.2f}P(\rho)$'%popt[2], linestyle='--',c=[0.5]*4)
+    eta = vals2.max()/p_star_given_rho.max()
+    p_star_given_rho *= eta1
+    ax.plot( bcen1,p_star_given_rho,linewidth=2, label=r'$\eta_1\rho^{%0.2f}P(\rho)$'%popt[2], linestyle='--',c=[0.5]*4)
 
 
 

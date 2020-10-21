@@ -1,4 +1,5 @@
 from starter2 import *
+import data_locations as dl
 import scipy.signal
 import matplotlib.patches as patches
 plt.close('all')
@@ -12,10 +13,19 @@ def powerlaw2(r, r0,alpha):
     rhosquared=1
     return alpha*np.log10(r/r0) + np.log10(rhosquared)
 axis=0
+
+this_simname = 'u10'
+#this_simname = 'u05'
 if 1:
     #sims
     if 1:   
-        """this is what you want to do."""
+        """This is the one"""
+        directory = dl.sims[this_simname]
+        frame=0
+        ds = yt.load("%s/DD%04d/data%04d"%(directory,frame,frame))
+        prefix="%s_n%04d"%(this_simname,frame)
+    if 0:   
+        """dead"""
         directory = '/scratch2/dcollins/Paper19_48/B02/u05-r4-l4-128/GravPotential'
         ds = yt.load("%s/DD%04d/data%04d"%(directory,0,0))
         prefix='u05'
@@ -39,6 +49,11 @@ if 1:
     dx = 1./size
     x,y,z = np.mgrid[0:size:1,0:size:1,0:size:1]
     xcen, ycen, zcen= size/2.,size/2., size/2.
+    rmag = np.sqrt((x-xcen)**2 + (y-ycen)**2+ (z-zcen)**2)
+
+    dx = 1./size
+    x,y,z = np.mgrid[0:1:dx,0:1:dx,0:1:dx]
+    xcen, ycen, zcen= 0.5, 0.5, 0.5,
     rmag = np.sqrt((x-xcen)**2 + (y-ycen)**2+ (z-zcen)**2)
 
 R_sphere = 0.25
@@ -115,7 +130,7 @@ if 1:
 
 
 if 1:    
-    binned=rb.rb2( rmag, AC.real,bins=bins)
+    binned=rb.rb2( rmag, AC.real)#,bins=bins)
     a22.plot( binned[1],binned[2],c='r',label='binned ACfft')
 
 if 0:
@@ -160,7 +175,7 @@ if 1:
 if 0:
     a24.legend(loc=0)
 
-fig2.savefig('plots_to_sort/p56_convolve_4_%s.png'%prefix)
+fig2.savefig('plots_to_sort/%s_density_AC.pdf'%prefix)
 print('saved')
 
 if 0:

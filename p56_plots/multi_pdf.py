@@ -117,10 +117,6 @@ if 1:
         kwargs['marker']= {'u05':'*','u10':'v','u11':'^'}[sim.name]
         cset={'u05':0.0,'u10':0.5,'u11':0.7}
         kwargs['color'] = [cset[sim.name]]*3
-        if 0:
-            ax.scatter(sim.means.dstds[ok],sim.means.vstds[ok])
-            axbonk(ax,yscale='log', xscale='log',  ylabel=r'$\sigma_v$', xlabel=r'$\sigma_{\rho}$')
-            fig.savefig(odir+'/%s_pre_rho_rms_v_rms.%s'%(sim.name,form))
         if 1:
             if only_once:
                 ax.plot( [1.0,1.0],[0,100],c=[0.5]*4)
@@ -133,6 +129,10 @@ if 1:
                    xlim=rho_ext.minmax,ylim=v_ext.minmax)
             ax.legend(loc=3)
             fig.savefig(odir+'/%s_pre_rho_mean_v_rms.%s'%(sim.name,form))
+        if 0:
+            ax.scatter(sim.means.dstds[ok],sim.means.vstds[ok])
+            axbonk(ax,yscale='log', xscale='log',  ylabel=r'$\sigma_v$', xlabel=r'$\sigma_{\rho}$')
+            fig.savefig(odir+'/%s_pre_rho_rms_v_rms.%s'%(sim.name,form))
         if 0:
             ax.clear()
             ax.scatter(sim.means.dmeans,sim.means.vmeans)

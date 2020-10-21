@@ -3,35 +3,46 @@
 This displays what all the functions in loop_apps.py do.
 """
 from starter2 import *
+import data_locations as dl
 import xtra_energy
 reload(loop_apps)
 from scipy.optimize import curve_fit
-core_list=looper.get_all_nonzero()
+
+
+#
+#
+#
+
+if 'this_simname' not in dir():
+    this_simname = 'u11'
+
+
 frame_list=[0]# range(0,130,10)
+core_list=looper.get_all_nonzero(dl.n_particles[this_simname])
 fields=['density']  
 #Look for app_test.h5 and read from that.
 #If not, make a new looper and write app_test.h5.
 save_field = '../Datasets/all_cores_n0000.h5'
+save_field = '../Datasets/u10_primitives_cXXXX_n0000.h5'
 if 'this_looper' not in dir() and os.path.exists(save_field) and True:
-    directory = '/scratch2/dcollins/Paper19_48/B02/u05-r4-l4-128/GravPotential'
+    directory = dl.sims[this_simname]
     this_looper = looper.core_looper(directory= directory,savefile=save_field)
     this_looper.derived = [xtra_energy.add_force_terms] #for some reason derived quantities aren't saved.
 
 if 'this_looper' not in dir() and False:
-    directory = '/scratch2/dcollins/Paper19_48/B02/u05-r4-l4-128/GravPotential'
+    directory = dl.sims[this_simname]
     this_looper = looper.core_looper(directory= directory,
                                      derived=[],
-                                     sim_name = 'u05',
-                                     out_prefix = 'plots_to_sort/test',
-                                     target_frame = 125,
+                                     sim_name = this_simname,
+                                     out_prefix = 'plots_to_sort/%s_test'%this_simname,
+                                     target_frame = dl.target_frames[this_simname],
                                      frame_list = frame_list,
                                      core_list = core_list,
                                      fields_from_grid=['x','y','z']+fields
                                   )
-    this_looper.get_target_indices(h5_name='datasets_small/u05_0125_peaklist.h5',
-                                     bad_particle_list='datasets_small/bad_particles.h5')
+    this_looper.get_target_indices(h5_name=dl.peaks[this_simname],
+                                     bad_particle_list=dl.bad_particles[this_simname])
     this_looper.get_tracks()
-    this_looper.save('all_cores_n%04d.h5'%0)
 
 
 #import testing.cic_test as cic
@@ -85,8 +96,9 @@ if 1:
 
 if 1:
     fig,ax=plt.subplots(1,1)
+    ok = vals2 > 0
     ax.plot( bcen1,vals1,'k',linewidth=2, label=r'$V(B)$')
-    ax.plot( bcen2,vals2,'k--',linewidth=2, label=r'$V(B|*)$')
+    ax.plot( bcen2[ok],vals2[ok],'k--',linewidth=2, label=r'$V(B|*)$')
 
 if 0:
     #overplot gaussians
@@ -102,9 +114,13 @@ if 1:
     ax.plot( bcen1[ratio>0], ratio[ratio>0],label=r"$V(*|B)$",c=[0.5]*4)
 
 if 1:
+    n=0
+    for core in this_looper.target_indices:
+        n+=this_looper.target_indices[core].size
+    eta1 = n/128**3
     p_star_given_rho = vals1#*bcen1**0.5
-    p_star_given_rho *= vals2.max()/p_star_given_rho.max()
-    ax.plot( bcen1,p_star_given_rho,linewidth=2, label=r'$\eta V(B)$', linestyle='--',c=[0.5]*4)
+    p_star_given_rho *= eta1
+    ax.plot( bcen1,p_star_given_rho,linewidth=2, label=r'$\eta_1 V(B)$', linestyle='--',c=[0.5]*4)
 
 if 0:
     #fit powerlaw for ratio
@@ -123,7 +139,7 @@ if 0:
 
 if 1:
     #ax.plot( bcen2,vals2*vals1.max()/vals2.max(),'r:')
-    outname = "plots_to_sort/pdf_field_preimage_fits.pdf"
+    outname = "plots_to_sort/%s_pdf_field_preimage_fits.pdf"%this_simname
     #axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='log',yscale='log')
     #axbonk(ax,xlabel=r'$\rho$',ylabel='V(rho)',xscale='linear',yscale='linear')
     axbonk(ax,xlabel=r'$B$',ylabel='V(B)',xscale='log',yscale='log')

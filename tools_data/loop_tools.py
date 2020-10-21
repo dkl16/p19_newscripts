@@ -17,55 +17,58 @@ from yt.data_objects.level_sets.clump_handling import \
             find_clumps, \
             get_lowest_clumps
 
-def get_leaf_indices(ds,c_min=None,c_max=None,step=100,h5_name="NEW_PEAK_FILE.h5",pickle_name=None, 
+def get_leaf_clumps(ds,c_min=None,c_max=None,step=100,h5_name="NEW_PEAK_FILE.h5",pickle_name=None, 
                      subset=None, peak_radius=1.5,bad_particle_list=None, small_test=False):
     """get all the leaf indices for peaks in *ds*.
     If *pickle_name* is supplied, load from that, or if it doesn't exist, save to that.
     *subset*, if supplied, will restrict the indices returned.
     """
-    if not os.path.exists(h5_name):
-
-        if small_test:
-            #center = ds.arr([0.07104492, 0.05688477, 0.1862793 ],'code_length')
-            peak,center=ds.find_max('density')
-            ad = ds.sphere(center,0.1)
-        else:
-            ad = ds.all_data()
-        #ad  = ds.sphere([0.52075195, 0.74682617, 0.01196289], 0.1)
-        master_clump = Clump(ad,('gas','density'))
-        master_clump.add_validator("min_cells", 8)
-        c_min = 10 #ad["gas", "density"].min()
-        #c_max = 534069645. # ad["gas", "density"].max()
-        c_max = ad["gas", "density"].max()
-        step = 100
-        find_clumps(master_clump, c_min, c_max, step)
-    # Write a text file of only the leaf nodes.
-        #write_clumps(master_clump,0, "%s_clumps.txt" % ds)
-
-        leaf_clumps = get_lowest_clumps(master_clump)
-    
-
-        peak_list=[]
-        den_max=[]
-        x_max=[]
-        y_max=[]
-        z_max=[]
-        for i in range(len(leaf_clumps)):
-            den_max.append(leaf_clumps[i][('gas','density')].max())
-            x_max.append(leaf_clumps[i]['x'][np.where(leaf_clumps[i]['gas','density']==den_max[i])])
-            y_max.append(leaf_clumps[i]['y'][np.where(leaf_clumps[i]['gas','density']==den_max[i])])
-            z_max.append(leaf_clumps[i]['z'][np.where(leaf_clumps[i]['gas','density']==den_max[i])])
-  
-            a= float(x_max[i])
-            b= float(y_max[i])
-            c= float(z_max[i])
-            this_peak = ds.arr([a,b,c],'code_length')
-            peak_list.append(this_peak)
-        #fPickle.dump(peak_list, pickle_name)
-        fptr=h5py.File(h5_name,'w')
-        fptr.create_dataset('peaks',data=np.array(peak_list))
-        fptr.close()
+    if small_test:
+        #center = ds.arr([0.07104492, 0.05688477, 0.1862793 ],'code_length')
+        peak,center=ds.find_max('density')
+        ad = ds.sphere(center,0.1)
     else:
+        ad = ds.all_data()
+    #ad  = ds.sphere([0.52075195, 0.74682617, 0.01196289], 0.1)
+    master_clump = Clump(ad,('gas','density'))
+    master_clump.add_validator("min_cells", 8)
+    c_min = 10 #ad["gas", "density"].min()
+    #c_max = 534069645. # ad["gas", "density"].max()
+    c_max = ad["gas", "density"].max()
+    step = 100
+    find_clumps(master_clump, c_min, c_max, step)
+# Write a text file of only the leaf nodes.
+    #write_clumps(master_clump,0, "%s_clumps.txt" % ds)
+
+    leaf_clumps = get_lowest_clumps(master_clump)
+    return master_clump
+
+def get_peak_indices(master_clump,ds,h5_name="file.h5"):
+
+    leaf_clumps = get_lowest_clumps(master_clump)
+
+    peak_list=[]
+    den_max=[]
+    x_max=[]
+    y_max=[]
+    z_max=[]
+    for i in range(len(leaf_clumps)):
+        den_max.append(leaf_clumps[i][('gas','density')].max())
+        max_loc = np.where(leaf_clumps[i]['gas','density']==den_max[i])
+        a = leaf_clumps[i]['x'][max_loc][0]
+        b = leaf_clumps[i]['y'][max_loc][0]
+        c = leaf_clumps[i]['z'][max_loc][0]
+
+        this_peak = ds.arr([a,b,c],'code_length')
+        peak_list.append(this_peak)
+    #fPickle.dump(peak_list, pickle_name)
+    fptr=h5py.File(h5_name,'w')
+    fptr.create_dataset('peaks',data=np.array(peak_list))
+    fptr.close()
+def get_leaf_indices(ds,c_min=None,c_max=None,step=100,h5_name="NEW_PEAK_FILE.h5",pickle_name=None, 
+                     subset=None, peak_radius=1.5,bad_particle_list=None, small_test=False):
+
+    if 1:
         fptr = h5py.File(h5_name,'r')
         peak_list = fptr['peaks'][:]
         fptr.close()

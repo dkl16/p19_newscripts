@@ -14,7 +14,14 @@ fields=['density']
 if 'this_looper' not in dir():
 
     directory = '/scratch2/dcollins/Paper19_48/B02/u05-r4-l4-128/GravPotential'
-    this_looper = looper.core_looper(directory= directory, derived=[xtra_energy.add_force_terms], sim_name = 'u05', out_prefix = 'plots_to_sort/u05', target_frame = 125, frame_list = frame_list, core_list = core_list, fields_from_grid=['x','y','z']+fields)
+    this_looper = looper.core_looper(directory= directory, 
+                                     derived=[xtra_energy.add_force_terms], 
+                                     sim_name = 'u05', 
+                                     out_prefix = 'plots_to_sort/u05', 
+                                     target_frame = 125, 
+                                     frame_list = frame_list, 
+                                     core_list = core_list, 
+                                     fields_from_grid=['x','y','z']+fields)
     this_looper.get_target_indices(h5_name='datasets_small/u05_0125_peaklist.h5',
                                      bad_particle_list='bad_particles.h5')
     this_looper.get_tracks()
@@ -38,7 +45,7 @@ def proj_cores_annotate_zoom(self, axis_list=[0,1,2],core_list=None, center_core
         proj = ds.proj(field,axis,center=center)
         self.proj=proj.to_pw(width=(1.0,'code_length'),center=center,origin='domain')
         #self.proj.set_cmap(field,'Greys')
-        self.proj.set_cmap(field,'gray')
+        self.proj.set_cmap(field,'Greys')
         self.proj.zoom(zoom_level)
         self.proj.set_axes_unit('code_length')
         for nc,core_number in enumerate(core_list):
@@ -64,11 +71,11 @@ def proj_cores_annotate_zoom(self, axis_list=[0,1,2],core_list=None, center_core
             self.proj.set_center(this_center)
             print( self.proj.save(outname))
 
-if 0:
+if 1:
 
     proj_cores_annotate_zoom(this_looper,axis_list=[0],core_list=core_list,center_cores=[8],cb_label='density')
 
-if 1:
+if 0:
     proj_cores_annotate_zoom(this_looper,axis_list=[0],core_list=core_list,center_cores=[34],cb_label='density',
                              zoom_level=8)
 

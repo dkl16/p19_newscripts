@@ -62,33 +62,34 @@ if 'prof0' not in dir():
 if 'prof_vel' not in dir():
     prof_vel=make_prof(ds1,['velocity_magnitude','cell_volume'])
 
-if 'dmeans' not in dir() or True:
-    dmeans = np.zeros_like(all_cores,dtype='float')
-    dstds = np.zeros_like(all_cores,dtype='float')
-    d_logmeans = np.zeros_like(all_cores,dtype='float')
-    d_logstds  = np.zeros_like(all_cores,dtype='float')
-    v_logmeans = np.zeros_like(all_cores,dtype='float')
-    v_logstds  = np.zeros_like(all_cores,dtype='float')
-    vmeans    = np.zeros_like(all_cores,dtype='float')
-    vstds = np.zeros_like(all_cores,dtype='float')
-    npart = np.zeros_like(all_cores,dtype='float')
-    vrel  =  np.zeros_like(all_cores,dtype='float')
-    volume =  np.zeros_like(all_cores,dtype='float')
+class means_etc():
+    def __init__(self,thtr,core_list):
+        self.dmeans = np.zeros_like(core_list,dtype='float')
+        self.dstds = np.zeros_like(core_list,dtype='float')
+        self.d_logmeans = np.zeros_like(core_list,dtype='float')
+        self.d_logstds  = np.zeros_like(core_list,dtype='float')
+        self.v_logmeans = np.zeros_like(core_list,dtype='float')
+        self.v_logstds  = np.zeros_like(core_list,dtype='float')
+        self.vmeans    = np.zeros_like(core_list,dtype='float')
+        self.vstds = np.zeros_like(core_list,dtype='float')
+        self.npart = np.zeros_like(core_list,dtype='float')
+        self.vrel  =  np.zeros_like(core_list,dtype='float')
+        self.volume =  np.zeros_like(core_list,dtype='float')
 
-    for i,nc in enumerate(all_cores):
-        this_density = thtr.c(int(nc),'density')[:,0]
-        npart[i] = this_density.size
-        this_vel = thtr.c(int(nc),'velocity_magnitude')[:,0]
-        this_volume = thtr.c(int(nc),'cell_volume')[:,0]
-        volume[i] = this_volume.sum()
-        dmeans[i]=this_density.mean()
-        dstds[i] = this_density.std()
-        d_logmeans[i]=np.exp(np.log(this_density).mean())
-        d_logstds[i] =np.exp(np.log(this_density).std())
-        v_logmeans[i]=np.exp(np.log(this_vel).mean())
-        v_logstds[i] =np.exp(np.log(this_vel).std())
-        vmeans[i]= this_vel.mean()
-        vstds[i] = this_vel.std()
+        for i,nc in enumerate(core_list):
+            this_density = thtr.c(int(nc),'density')[:,0]
+            this_vel = thtr.c(int(nc),'velocity_magnitude')[:,0]
+            this_volume = thtr.c(int(nc),'cell_volume')[:,0]
+            self.npart[i] = this_density.size
+            self.volume[i] = this_volume.sum()
+            self.dmeans[i]=this_density.mean()
+            self.dstds[i] = this_density.std()
+            self.d_logmeans[i]=np.exp(np.log(this_density).mean())
+            self.d_logstds[i] =np.exp(np.log(this_density).std())
+            self.v_logmeans[i]=np.exp(np.log(this_vel).mean())
+            self.v_logstds[i] =np.exp(np.log(this_vel).std())
+            self.vmeans[i]= this_vel.mean()
+            self.vstds[i] = this_vel.std()
 
 
 if 0:

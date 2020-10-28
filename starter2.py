@@ -13,15 +13,16 @@ for directory in path_list:
 
 import yt
 
-import looper
-reload(looper)
-import trackage
-reload(trackage)
-
 import data_locations as dl
 
+import pyximport
+pyximport.install(setup_args={'include_dirs': np.get_include()})
+import particle_ops as particle_ops
+import particle_grid_mask as particle_grid_mask
+
 import looper
 reload(looper)
+
 import trackage
 reload(trackage)
 import tracks_read_write as trw

@@ -31,6 +31,15 @@ if 0:
 
 if 1:
     """this set of parameters extracts all primitive quantities"""
+    core_list = all_nonzero.astype('int')[::-1][3:4]
+    target_frame = dl.target_frames[this_simname]
+    frame_list = [0]# [0]+list(range(10,target_frame,10))+[target_frame]
+    fields = ['x','y','z','density']
+    output_base = "%s_density_only"%this_simname
+    derived=[]
+
+if 0:
+    """this set of parameters extracts all primitive quantities"""
     core_list = all_nonzero.astype('int')[::-1]
     target_frame = dl.target_frames[this_simname]
     frame_list = [0]+list(range(10,target_frame,10))+[target_frame]

@@ -18,6 +18,7 @@ if machine is None:
     elif  os.path.exists("/data/cb1"):
         machine = 'Cloudbreak'
     elif 'machine' in os.environ:
+        machine = os.environ['machine']
     else:
         print("data_locations.py Bad error: cannot detrmine machine")
 

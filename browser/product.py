@@ -3,11 +3,26 @@ from starter2 import *
 from collections import defaultdict
 
 class plot():
+    """container object that connects images with parameters"""
     def __init__(self,fname=".",parameters={}):
         self.fname=fname
         self.parameters=parameters
 
 class product():
+    """A tool to collect plots.  Takes
+    myglob: a list of files. It's kind of redundant.
+    regexp: a regular expression to match and extract parameters from.  For example, 
+                /scratch/user/images/projection_x_c0123_n0100.png
+            would want a regular expression to extract the core id (c0123) and frame (n0100)
+    name: title on the column
+    style: how to display the image.  Options are
+        single: just make an img tag with each file name
+        value: also then takes 
+               fname: name of hdf5 file contating records
+               field: name of field.  
+               It expexts a record that looks like
+                   fname.h5[field]['core_id']
+            """
     def __init__(self, name="P", regexp="reg",myglob="glob",
                  parameters=['core_id','frame'],style='single',width=200,
                  fname=None,field=None):

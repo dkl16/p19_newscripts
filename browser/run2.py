@@ -15,8 +15,14 @@ for this_simname in ['u05','u10','u11']:
 
     p13 = product.product('Tc_raw',fname='browser/%s_ct.h5'%this_simname,field='collapse_times',style='value',width=400)
 
+    g2 = "%s/alpha_time/%s/%s_density_radius_c????.png"%(basedir, this_simname, this_simname)
+    r2 = re.compile(r"%s/alpha_time/%s/%s_density_radius_c(\d\d\d\d).png"%(basedir, this_simname, this_simname))
+    p2 = product.product("alpha-time", regexp=r2, myglob=g2, parameters=['core_id'],style='single',width=400)
+    p2.get_frames()
 
-    product_list=[p13,p1]
+
+
+    product_list=[p13,p1,p2]
     cl=make_page.make_page(product_list, core_list=None,htmlname='browser/output_%s.html'%(this_simname))
 
 

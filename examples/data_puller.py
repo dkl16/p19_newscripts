@@ -29,7 +29,7 @@ if 0:
     output_base = "primitive_test"
     derived=[]
 
-if 1:
+if 0:
     """this set of parameters extracts all primitive quantities"""
     core_list = all_nonzero.astype('int')[::-1][3:4]
     target_frame = dl.target_frames[this_simname]
@@ -38,7 +38,7 @@ if 1:
     output_base = "%s_density_only"%this_simname
     derived=[]
 
-if 1:
+if 0:
     """this set of parameters extracts all primitive quantities"""
     core_list = all_nonzero.astype('int')[::-1]
     target_frame = dl.target_frames[this_simname]
@@ -57,6 +57,20 @@ if 0:
     fields = ['mag_work']
     derived=[xtra_energy.add_force_terms]
     output_base = 'mag_work_only'
+
+if 1:
+    """This set extracts magnetic work"""
+    core_list = all_nonzero.astype('int')
+    target_frame = dl.target_frames[this_simname]
+    frame_list =list(range(0,target_frame,10))+[target_frame]
+    fields = ['x','y','z','density'] #always need these
+    fields += ['kinetic_energy','therm_energy','magnetic_energy','PotentialField','vorticity_magnitude']
+    fields += ['velocity_x','velocity_y','velocity_z']
+    fields += ['magnetic_field_%s'%s for s in 'xyz']
+    fields += ['PotentialField']
+    derived=[xtra_energy.add_force_terms, xtra_energy.add_energies]
+    output_base = '%s_energy_vorticity'%this_simname
+    pdb.set_trace()
 
 if 1:
     #Pull a whole list for each core, saving each core to its own file

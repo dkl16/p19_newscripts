@@ -7,10 +7,14 @@ import loop_tools
 reload(loop_tools)
 kill = []
 
-for looper666 in [TL.looper3]:
-    for i,nc in enumerate(looper666.core_list):
-        if nc not in looper666.target_indices.keys():
-            kill.append(i)
-    for i in kill[::-1]:
-        looper666.core_list.pop(i)
-    loop_apps.core_proj_follow(looper666,axis_list=[0])
+TL.looper1.core_list= looper.get_all_nonzero(dl.n_particles['u05'])
+TL.looper2.core_list= looper.get_all_nonzero(dl.n_particles['u10'])
+TL.looper3.core_list= looper.get_all_nonzero(dl.n_particles['u11'])
+
+TL.looper1.frame_list =list(range(0,130,10))+[125]
+TL.looper2.frame_list =list(range(0,82,10))+[82]
+TL.looper3.frame_list =list(range(0,88,10))+[88]
+
+#for looper666 in [TL.looper1, TL.looper2, TL.looper3]:
+loop_apps.core_proj_follow(TL.looper3,axis_list=[0])
+

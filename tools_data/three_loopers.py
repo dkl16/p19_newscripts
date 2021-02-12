@@ -1,4 +1,5 @@
 from starter2 import *
+reload(looper)
 if 'looper1' not in dir():
     file_list=glob.glob(dl.every_ten['u05'])
     looper1=looper.core_looper(directory=dl.sims['u05'])

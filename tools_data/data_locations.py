@@ -10,13 +10,17 @@ from starter2 import *
 #
 # guess the computer
 #
-machine = None
-if os.path.exists("/scratch1"):
-    machine = 'Nazare'
-elif  os.path.exists("/data/cb1"):
-    machine = 'Cloudbreak'
-else:
-    print("Bad error: cannot detrmine machine")
+
+machine = os.environ.get('machine',None)
+if machine is None:
+    if os.path.exists("/scratch1"):
+        machine = 'Nazare'
+    elif  os.path.exists("/data/cb1"):
+        machine = 'Cloudbreak'
+    elif 'machine' in os.environ:
+        machine = os.environ['machine']
+    else:
+        print("data_locations.py Bad error: cannot detrmine machine")
 
 output_directory = "./plots_to_sort"
         
@@ -45,6 +49,21 @@ elif machine == 'Cloudbreak':
     u101_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u101_every_ten/u101_all_primitives_primitives_c*_nXXX0.h5"
     u102_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u102_every_ten/u102_all_primitives_primitives_c*_nXXX0.h5"
     u103_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u103_every_ten/u103_all_primitives_primitives_c*_nXXX0.h5"
+else:
+    sim_u05 = None
+    sim_u10 = None
+    sim_u11 = None
+
+    u05_every_ten = None
+    u10_every_ten = None
+    u11_every_ten = None
+
+    sim_u101 = None
+    sim_u102 = None
+    sim_u103 = None
+    u101_every_ten = None
+    u102_every_ten = None
+    u103_every_ten = None
 
     energy_vorticity_files = {'u05':"/data/cb1/Projects/P19_CoreSimulations/CoreSets/energy_vorticity/u05/u05_energy_vorticity_primitives_c????_nXXX0.h5",
                               'u10':"/data/cb1/Projects/P19_CoreSimulations/CoreSets/energy_vorticity/u10/u10_energy_vorticity_primitives_c????_nXXX0.h5",

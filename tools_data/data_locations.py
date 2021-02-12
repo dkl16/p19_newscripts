@@ -30,7 +30,6 @@ if machine == 'Nazare':
     u11_every_ten = "/scratch1/dcollins/Paper19/Datasets/u11_every_ten/u11_all_primitives_primitives_c*_nXXX0.h5"
 
 
-
 elif machine == 'Cloudbreak':
     sim_u05 = '/data/cb1/Projects/P19_CoreSimulations/u05-r4-l4-128-Beta0.2/GravPotential'
     sim_u10 = '/data/cb1/Projects/P19_CoreSimulations/u10_r4_l4_128-Beta2/GravPotential'
@@ -46,6 +45,13 @@ elif machine == 'Cloudbreak':
     u101_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u101_every_ten/u101_all_primitives_primitives_c*_nXXX0.h5"
     u102_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u102_every_ten/u102_all_primitives_primitives_c*_nXXX0.h5"
     u103_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u103_every_ten/u103_all_primitives_primitives_c*_nXXX0.h5"
+
+    energy_vorticity_files = {'u05':"/data/cb1/Projects/P19_CoreSimulations/CoreSets/energy_vorticity/u05/u05_energy_vorticity_primitives_c????_nXXX0.h5",
+                              'u10':"/data/cb1/Projects/P19_CoreSimulations/CoreSets/energy_vorticity/u10/u10_energy_vorticity_primitives_c????_nXXX0.h5",
+                              'u11':"/data/cb1/Projects/P19_CoreSimulations/CoreSets/energy_vorticity/u11/u11_energy_vorticity_primitives_c????_nXXX0.h5"}
+    energy_vorticity_files = {'u05':"./u05_energy_vorticity_primitives_c????_nXXX0.h5",
+                              'u10':"./u10_energy_vorticity_primitives_c????_nXXX0.h5",
+                              'u11':"./u11_energy_vorticity_primitives_c????_nXXX0.h5"}
 
 sims={'u05':sim_u05,'u10':sim_u10,'u11':sim_u11,'u101':sim_u101,'u102':sim_u102,'u103':sim_u103}
 

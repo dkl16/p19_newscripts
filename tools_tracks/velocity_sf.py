@@ -75,13 +75,14 @@ class trial():
             self.r.append(rsort)
             dv = cell_volume[asort]
 
-            v2_sorted = ms.cov_v2[:,nt][asort]
-
-            vr = ms.vr_rel[:,nt]
-            #vr = v2_sorted
-            vrs = vr[asort]
-            #sigma_vr = np.sqrt(np.cumsum(vrs**2*dv)/np.cumsum(dv))
-            sigma_vr2 = np.cumsum(vrs**2*dv)/np.cumsum(dv)
+            if 0:
+                vr = ms.vr_rel[:,nt]  #the radial one, works ok
+                vrs = vr[asort]
+                sigma_vr2 = np.cumsum(vrs**2*dv)/np.cumsum(dv)
+            if 1:
+                vr = ms.rel_vmag[:,nt]  #testing
+                vrs = vr[asort]
+                sigma_vr2 = np.cumsum(vrs**2*dv)/np.cumsum(dv)
             self.vr.append(sigma_vr2)
 
             v2_sorted=self.vr[-1]
@@ -119,10 +120,14 @@ if 'do_all_plots' not in dir():
 
 import three_loopers as TL
 import sf2
-
+frame=0
 if 1:
     run1 = trial(TL.looper1)
     run1.by_frame(frame)
+    run2 = trial(TL.looper2)
+    run2.by_frame(frame)
+    run3 = trial(TL.looper3)
+    run3.by_frame(frame)
 #for frame in [0]: #range(0,110,10):
 #    run1.plot(frame)
 
@@ -151,10 +156,11 @@ def plot(self,frame, my_sf2=None):
 
 import sf2
 reload( sf2)
-if 'msf' not in dir() or True:
-    msf = sf2.make_sf(TL.looper1,0)
-    rbins,SS = msf.bin_take3(); SS/=2*np.pi
-    #rbins,SS = msf.bin_kludged()
+for run in [run1, run2, run3]:
+    if 'msf' not in dir() or True:
+        msf = sf2.make_sf(run.this_looper,0)
+        rbins,SS = msf.bin_take3(); SS/=2*np.pi
+        #rbins,SS = msf.bin_kludged()
 
-plot(run1,0, my_sf2=[rbins,SS])
+    plot(run,0, my_sf2=[rbins,SS])
 #plot(run1,0, my_sf2=[rbins,SS])

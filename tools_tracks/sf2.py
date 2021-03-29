@@ -69,10 +69,20 @@ class make_sf():
 
         k1=1
         k2 = 1/5/k1
-        self.v2 = (2*(self.sigma_3d*k1)-2*(self.v2a*k2))/4
+        self.v2 = (2*(self.sigma_3d*k1)-2*(self.v2a*k2))
+
+        #self.v2 = (2*(self.sigma_3d/5)-2*(self.v2a))
         #v2n = v2/128**3*twopi
         self.binned2=rb.rb( self.rall, self.v2,bins=self.bins)
+        return self.binned2[1], self.binned2[2]
         #a23.plot( binned2[1], binned2[2])
+    def bin_take3(self):
+        #Doesn't quite work.
+        edge,center,hist=rb.rb( self.rall, self.v2a,bins=self.bins)
+        s2 = 2*(hist[0] - hist)
+        self.binned2 = [edge,center,hist]
+        return center,s2
+
     def plot(self):
         dx = 1./128
         bins = np.arange(0.5*dx,1,dx)

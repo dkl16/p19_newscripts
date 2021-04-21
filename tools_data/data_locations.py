@@ -50,6 +50,16 @@ elif machine == 'cloudbreak':
     u101_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u101_every_ten/u101_all_primitives_primitives_c*_nXXX0.h5"
     u102_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u102_every_ten/u102_all_primitives_primitives_c*_nXXX0.h5"
     u103_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u103_every_ten/u103_all_primitives_primitives_c*_nXXX0.h5"
+
+    #The 200 series continues u05, u10, and u11 to 1tff, 
+    #and ties the analysis to cores found at 1 tff.
+    sim_u201 = '/data/cb1/Projects/P19_CoreSimulations/u05-r4-l4-128-Beta0.2/GravPotential'
+    sim_u202 = '/data/cb1/Projects/P19_CoreSimulations/u202-Beta2/GravPotential'  
+    sim_u203 = '/data/cb1/Projects/P19_CoreSimulations/u203-Beta20/GravPotential' 
+
+    u201_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u201/*h5"
+    u202_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u202/*h5"
+    u203_every_ten = "/data/cb1/Projects/P19_CoreSimulations/CoreSets/u203/*h5"
 else:
     sim_u05 = None
     sim_u10 = None
@@ -75,6 +85,7 @@ else:
 
 
 sims={'u05':sim_u05,'u10':sim_u10,'u11':sim_u11,'u101':sim_u101,'u102':sim_u102,'u103':sim_u103}
+sims.update({'u201':sim_u201,'u202':sim_u202,'u203':sim_u203})
 sims['u14']=sim_u14
 
 
@@ -92,6 +103,7 @@ peak_list['u14']=peaks_u14
 target_frames={'u05':125,'u10':82,'u11':88,'u101':80,'u102':80,'u103':80,'u14':25}
 
 every_ten = {'u05':u05_every_ten,'u10':u10_every_ten,'u11':u11_every_ten, 'u101':u101_every_ten,'u102':u102_every_ten,'u103':u103_every_ten}
+every_ten.update({'u201':u201_every_ten,'u202':u202_every_ten,'u203':u203_every_ten})
 
 
 

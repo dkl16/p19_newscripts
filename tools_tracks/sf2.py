@@ -28,7 +28,7 @@ class do_ac():
         self.ACunit = self.AC/self.rho.sum()
         
 class make_sf():
-    def __init__(self,this_looper,frame):
+    def __init__(self,this_looper=this_looper,frame):
         dx = 1./128
         self.bins = np.arange(0.5*dx,1,dx)
         db = self.bins[1:]-self.bins[:-1]
